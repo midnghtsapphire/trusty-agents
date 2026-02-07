@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,12 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { 
   Building2, Phone, Calendar, Settings, CheckCircle2, 
-  ArrowRight, ArrowLeft, Sparkles, Globe, Clock, MessageSquare, Loader2
+  ArrowRight, ArrowLeft, Sparkles, Globe, Clock, MessageSquare, Loader2,
+  AlertTriangle, Crown
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { PRICING_TIERS, getTierByProductId, PricingTier } from "@/lib/stripe";
 interface AgentOnboardingWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -49,9 +51,60 @@ const AgentOnboardingWizard = ({
     services: "",
   });
   const [isCreating, setIsCreating] = useState(false);
+  const [agentCount, setAgentCount] = useState(0);
+  const [currentTier, setCurrentTier] = useState<PricingTier | null>(null);
+  const [checkingLimits, setCheckingLimits] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
+
+  // Check subscription and agent count when dialog opens
+  useEffect(() => {
+    if (open && user) {
+      checkAgentLimits();
+    }
+  }, [open, user]);
+
+  const checkAgentLimits = async () => {
+    setCheckingLimits(true);
+    try {
+      // Get agent count
+      const { count, error: countError } = await supabase
+        .from("agents")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user?.id);
+
+      if (countError) throw countError;
+      setAgentCount(count || 0);
+
+      // Get subscription tier
+      const { data: session } = await supabase.auth.getSession();
+      if (session.session) {
+        const { data, error } = await supabase.functions.invoke("check-subscription", {
+          headers: {
+            Authorization: `Bearer ${session.session.access_token}`,
+          },
+        });
+
+        if (!error && data?.subscribed && data?.product_id) {
+          const tier = getTierByProductId(data.product_id);
+          setCurrentTier(tier);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking agent limits:", error);
+    } finally {
+      setCheckingLimits(false);
+    }
+  };
+
+  const getAgentLimit = () => {
+    return currentTier ? PRICING_TIERS[currentTier].agentLimit : 1;
+  };
+
+  const isAtLimit = () => {
+    return agentCount >= getAgentLimit();
+  };
 
   const progress = (currentStep / steps.length) * 100;
   
@@ -87,6 +140,16 @@ const AgentOnboardingWizard = ({
         variant: "destructive",
       });
       navigate("/auth");
+      return;
+    }
+
+    // Check if at limit
+    if (isAtLimit()) {
+      toast({
+        title: "Agent limit reached",
+        description: `You've reached your limit of ${getAgentLimit()} agent(s). Upgrade your plan for more.`,
+        variant: "destructive",
+      });
       return;
     }
 
@@ -386,65 +449,115 @@ const AgentOnboardingWizard = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="glass-intense border-white/20 max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-3 text-foreground">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-magic/30 to-sparkle/30 text-magic">
-              {icon}
+        {checkingLimits ? (
+          <div className="py-12 text-center">
+            <Loader2 className="mx-auto animate-spin text-magic mb-4" size={32} />
+            <p className="text-muted-foreground">Checking your plan limits...</p>
+          </div>
+        ) : isAtLimit() ? (
+          // Limit reached screen
+          <div className="py-8 text-center space-y-6">
+            <div className="w-16 h-16 mx-auto rounded-full bg-destructive/20 flex items-center justify-center">
+              <AlertTriangle size={32} className="text-destructive" />
             </div>
             <div>
-              <span className="text-lg font-bold">Deploy {industry} {agentType}</span>
-              <p className="text-sm text-muted-foreground font-normal">Step {currentStep} of {steps.length}</p>
+              <h3 className="text-xl font-bold text-foreground mb-2">Agent Limit Reached</h3>
+              <p className="text-muted-foreground">
+                You've used all {getAgentLimit()} agent slot{getAgentLimit() > 1 ? "s" : ""} on your {currentTier ? PRICING_TIERS[currentTier].name : "Free"} plan.
+              </p>
             </div>
-          </DialogTitle>
-        </DialogHeader>
-
-        {/* Progress */}
-        <div className="space-y-2">
-          <Progress value={progress} className="h-2" />
-          <div className="flex justify-between">
-            {steps.map((step) => (
-              <div 
-                key={step.id}
-                className={`flex flex-col items-center gap-1 ${
-                  step.id <= currentStep ? "text-magic" : "text-muted-foreground/50"
-                }`}
-              >
-                <step.icon size={16} />
-                <span className="text-[10px] hidden sm:block">{step.title}</span>
+            <div className="glass-card border border-white/10 rounded-xl p-4 text-left">
+              <p className="text-sm text-muted-foreground mb-3">Upgrade to unlock more agents:</p>
+              <div className="space-y-2">
+                {Object.entries(PRICING_TIERS).map(([key, tier]) => (
+                  <div key={key} className="flex items-center justify-between text-sm">
+                    <span className="text-foreground">{tier.name}</span>
+                    <span className="text-muted-foreground">{tier.agentLimit} agent{tier.agentLimit > 1 ? "s" : ""}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            <div className="flex gap-3">
+              <Button variant="ghost" onClick={() => onOpenChange(false)} className="flex-1">
+                Cancel
+              </Button>
+              <Link to="/pricing" className="flex-1">
+                <Button variant="magic" className="w-full gap-2">
+                  <Crown size={16} />
+                  Upgrade Plan
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
+        ) : (
+          // Normal wizard flow
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-3 text-foreground">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-magic/30 to-sparkle/30 text-magic">
+                  {icon}
+                </div>
+                <div>
+                  <span className="text-lg font-bold">Deploy {industry} {agentType}</span>
+                  <p className="text-sm text-muted-foreground font-normal">Step {currentStep} of {steps.length}</p>
+                </div>
+              </DialogTitle>
+            </DialogHeader>
 
-        {/* Content */}
-        <div className="py-4">
-          {renderStepContent()}
-        </div>
+            {/* Progress */}
+            <div className="space-y-2">
+              <Progress value={progress} className="h-2" />
+              <div className="flex justify-between">
+                {steps.map((step) => (
+                  <div 
+                    key={step.id}
+                    className={`flex flex-col items-center gap-1 ${
+                      step.id <= currentStep ? "text-magic" : "text-muted-foreground/50"
+                    }`}
+                  >
+                    <step.icon size={16} />
+                    <span className="text-[10px] hidden sm:block">{step.title}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-        {/* Navigation */}
-        <div className="flex justify-between gap-3">
-          <Button
-            variant="ghost"
-            onClick={prevStep}
-            disabled={currentStep === 1}
-            className="gap-1"
-          >
-            <ArrowLeft size={16} />
-            Back
-          </Button>
+            {/* Slot indicator */}
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <span>Using slot {agentCount + 1} of {getAgentLimit()}</span>
+            </div>
 
-          {currentStep < steps.length ? (
-            <Button variant="magic" onClick={nextStep} className="gap-1">
-              Next
-              <ArrowRight size={16} />
-            </Button>
-          ) : (
-            <Button variant="poof" onClick={handleLaunch} className="gap-1" disabled={isCreating}>
-              {isCreating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
-              {isCreating ? "Deploying..." : "Launch Agent"}
-            </Button>
-          )}
-        </div>
+            {/* Content */}
+            <div className="py-4">
+              {renderStepContent()}
+            </div>
+
+            {/* Navigation */}
+            <div className="flex justify-between gap-3">
+              <Button
+                variant="ghost"
+                onClick={prevStep}
+                disabled={currentStep === 1}
+                className="gap-1"
+              >
+                <ArrowLeft size={16} />
+                Back
+              </Button>
+
+              {currentStep < steps.length ? (
+                <Button variant="magic" onClick={nextStep} className="gap-1">
+                  Next
+                  <ArrowRight size={16} />
+                </Button>
+              ) : (
+                <Button variant="poof" onClick={handleLaunch} className="gap-1" disabled={isCreating}>
+                  {isCreating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+                  {isCreating ? "Deploying..." : "Launch Agent"}
+                </Button>
+              )}
+            </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
