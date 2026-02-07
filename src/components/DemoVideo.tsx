@@ -39,6 +39,36 @@ const DemoVideo = () => {
     return () => video.removeEventListener("timeupdate", handleTimeUpdate);
   }, []);
 
+  // Keyboard shortcuts: Space = play/pause, C = toggle captions, M = mute
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only trigger if not typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      
+      switch (e.key.toLowerCase()) {
+        case " ":
+          e.preventDefault();
+          togglePlay();
+          break;
+        case "c":
+          e.preventDefault();
+          toggleCaptions();
+          break;
+        case "m":
+          e.preventDefault();
+          toggleMute();
+          break;
+        case "f":
+          e.preventDefault();
+          toggleFullscreen();
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isPlaying, isMuted, showCaptions]);
+
   const narrationText = useMemo(
     () =>
       [
@@ -151,6 +181,8 @@ const DemoVideo = () => {
     }
   };
 
+  const toggleCaptions = () => setShowCaptions(prev => !prev);
+
   const toggleFullscreen = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -162,9 +194,11 @@ const DemoVideo = () => {
     }
   };
 
-  const toggleCaptions = () => setShowCaptions(!showCaptions);
+  // Full transcript text for reading
+  const fullTranscript = CAPTIONS.map(c => c.text).join(" ");
 
   return (
+    <>
     <div 
       className="relative rounded-2xl overflow-hidden border border-border shadow-magic group"
       role="region"
@@ -314,6 +348,60 @@ const DemoVideo = () => {
         }
       </div>
     </div>
+
+    {/* Transcript section below video */}
+    <div className="mt-6 bg-muted/30 border border-border rounded-xl p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-foreground">
+          📄 Full Transcript
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          For users who prefer reading
+        </p>
+      </div>
+      
+      <div className="space-y-3">
+        {CAPTIONS.map((caption, index) => (
+          <div 
+            key={index}
+            className={`flex gap-4 p-3 rounded-lg transition-colors ${
+              isPlaying && currentTime >= caption.start && currentTime < caption.end
+                ? "bg-primary/10 border border-primary/30"
+                : "bg-background/50"
+            }`}
+          >
+            <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary font-bold text-sm flex items-center justify-center">
+              {index + 1}
+            </span>
+            <p className="text-base md:text-lg text-foreground leading-relaxed">
+              {caption.text}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Keyboard shortcuts help */}
+      <div className="mt-6 pt-4 border-t border-border">
+        <p className="text-sm font-medium text-muted-foreground mb-2">
+          ⌨️ Keyboard Shortcuts
+        </p>
+        <div className="flex flex-wrap gap-3 text-sm">
+          <span className="px-2 py-1 bg-background rounded border border-border">
+            <kbd className="font-mono font-bold">Space</kbd> Play/Pause
+          </span>
+          <span className="px-2 py-1 bg-background rounded border border-border">
+            <kbd className="font-mono font-bold">C</kbd> Captions
+          </span>
+          <span className="px-2 py-1 bg-background rounded border border-border">
+            <kbd className="font-mono font-bold">M</kbd> Mute
+          </span>
+          <span className="px-2 py-1 bg-background rounded border border-border">
+            <kbd className="font-mono font-bold">F</kbd> Fullscreen
+          </span>
+        </div>
+      </div>
+    </div>
+    </>
   );
 };
 
