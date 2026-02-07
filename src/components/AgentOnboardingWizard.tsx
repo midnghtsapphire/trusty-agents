@@ -8,13 +8,15 @@ import { Progress } from "@/components/ui/progress";
 import { 
   Building2, Phone, Calendar, Settings, CheckCircle2, 
   ArrowRight, ArrowLeft, Sparkles, Globe, Clock, MessageSquare, Loader2,
-  AlertTriangle, Crown
+  AlertTriangle, Crown, Volume2, VolumeX
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { PRICING_TIERS, getTierByProductId, PricingTier } from "@/lib/stripe";
+import { useIndustryAudio } from "@/hooks/useIndustryAudio";
+
 interface AgentOnboardingWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -54,9 +56,17 @@ const AgentOnboardingWizard = ({
   const [agentCount, setAgentCount] = useState(0);
   const [currentTier, setCurrentTier] = useState<PricingTier | null>(null);
   const [checkingLimits, setCheckingLimits] = useState(true);
+  const [hasPlayedIndustrySound, setHasPlayedIndustrySound] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
+  const { 
+    isPlaying: audioPlaying, 
+    isLoading: audioLoading, 
+    stopAudio, 
+    generateAndPlaySFX, 
+    generateAndPlayFrustrated 
+  } = useIndustryAudio();
 
   // Check subscription and agent count when dialog opens
   useEffect(() => {
@@ -64,6 +74,26 @@ const AgentOnboardingWizard = ({
       checkAgentLimits();
     }
   }, [open, user]);
+
+  // Play industry comfort sounds when step 1 loads (first time)
+  useEffect(() => {
+    if (open && currentStep === 1 && !checkingLimits && !hasPlayedIndustrySound && industry) {
+      setHasPlayedIndustrySound(true);
+      // Play SFX first, then after a moment play frustrated caller
+      generateAndPlaySFX(industry);
+      setTimeout(() => {
+        generateAndPlayFrustrated(industry);
+      }, 5000);
+    }
+  }, [open, currentStep, checkingLimits, hasPlayedIndustrySound, industry, generateAndPlaySFX, generateAndPlayFrustrated]);
+
+  // Reset audio flag when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setHasPlayedIndustrySound(false);
+      stopAudio();
+    }
+  }, [open, stopAudio]);
 
   const checkAgentLimits = async () => {
     setCheckingLimits(true);
@@ -204,6 +234,26 @@ const AgentOnboardingWizard = ({
             <div className="text-center mb-6">
               <h3 className="text-lg font-semibold text-foreground">Tell us about your business</h3>
               <p className="text-sm text-muted-foreground">We'll configure your agent to match your brand</p>
+              
+              {/* Audio indicator for industry sounds */}
+              {(audioPlaying || audioLoading) && (
+                <div className="flex items-center justify-center gap-2 mt-3 p-2 rounded-lg bg-magic/10 border border-magic/20">
+                  {audioLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 border-2 border-magic border-t-transparent rounded-full animate-spin" />
+                      <span className="text-xs text-magic">Loading {industry} sounds...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <Volume2 size={14} className="text-magic animate-pulse" />
+                      <span className="text-xs text-magic">Hear what your customers are going through!</span>
+                      <button onClick={stopAudio} className="ml-1 opacity-60 hover:opacity-100">
+                        <VolumeX size={12} />
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
             
             <div className="space-y-3">

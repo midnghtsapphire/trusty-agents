@@ -1,19 +1,34 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles, ArrowRight, Clock, Zap } from "lucide-react";
+import { Check, Sparkles, ArrowRight, Clock, Zap, Volume2, VolumeX } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import BackgroundParticles from "@/components/BackgroundParticles";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useIndustryAudio } from "@/hooks/useIndustryAudio";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const [creditsAdded, setCreditsAdded] = useState(false);
   const [addingCredits, setAddingCredits] = useState(false);
+  const [hasPlayedAudio, setHasPlayedAudio] = useState(false);
+  
+  const { isPlaying, isLoading, playHappyCustomer, stopAudio } = useIndustryAudio();
   
   const type = searchParams.get("type");
   const minutes = searchParams.get("minutes");
   const isCredits = type === "credits" && minutes;
+
+  // Play happy customer audio on successful purchase
+  const playCelebration = useCallback(async () => {
+    if (hasPlayedAudio) return;
+    setHasPlayedAudio(true);
+    
+    // Small delay to let the page render
+    setTimeout(() => {
+      playHappyCustomer();
+    }, 1000);
+  }, [hasPlayedAudio, playHappyCustomer]);
 
   useEffect(() => {
     const addCredits = async () => {
@@ -30,7 +45,7 @@ const PaymentSuccess = () => {
         const { data, error } = await supabase.functions.invoke("add-credits", {
           body: { 
             minutes: parseInt(minutes, 10),
-            amount_cents: 0, // We don't have the exact amount here
+            amount_cents: 0,
           },
           headers: {
             Authorization: `Bearer ${session.session.access_token}`,
@@ -41,6 +56,9 @@ const PaymentSuccess = () => {
         
         setCreditsAdded(true);
         toast.success(`${minutes} minutes added to your account!`);
+        
+        // Play celebration audio after credits are added
+        playCelebration();
       } catch (error) {
         console.error("Error adding credits:", error);
         toast.error("Failed to add credits. Please contact support.");
@@ -50,7 +68,14 @@ const PaymentSuccess = () => {
     };
 
     addCredits();
-  }, [isCredits, minutes, creditsAdded, addingCredits]);
+  }, [isCredits, minutes, creditsAdded, addingCredits, playCelebration]);
+
+  // Also play for subscription purchases
+  useEffect(() => {
+    if (!isCredits && !hasPlayedAudio) {
+      playCelebration();
+    }
+  }, [isCredits, hasPlayedAudio, playCelebration]);
 
   return (
     <div className="min-h-screen relative flex items-center justify-center">
@@ -76,6 +101,26 @@ const PaymentSuccess = () => {
               "Thank you for your purchase. Your order has been confirmed and you'll receive a confirmation email shortly."
             )}
           </p>
+
+          {/* Audio indicator */}
+          {(isPlaying || isLoading) && (
+            <div className="flex items-center justify-center gap-2 mb-4 p-3 rounded-lg bg-magic/10 border border-magic/20">
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-magic border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm text-magic">Generating celebration...</span>
+                </div>
+              ) : (
+                <>
+                  <Volume2 size={16} className="text-magic animate-pulse" />
+                  <span className="text-sm text-magic">Happy customer calling in!</span>
+                  <button onClick={stopAudio} className="ml-2 opacity-60 hover:opacity-100">
+                    <VolumeX size={14} />
+                  </button>
+                </>
+              )}
+            </div>
+          )}
 
           {isCredits && (
             <div className="flex items-center justify-center gap-2 mb-6 p-3 rounded-lg bg-magic/10 border border-magic/20">
