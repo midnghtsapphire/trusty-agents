@@ -5,12 +5,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Phone, Calendar, Users, TrendingUp, Clock, CheckCircle2, 
   PhoneIncoming, PhoneOutgoing, PhoneMissed, MessageSquare,
-  DollarSign, BarChart3, Settings, Home, Sparkles, Play, Pause, Plus, LogOut, User
+  DollarSign, BarChart3, Settings, Home, Sparkles, Play, Pause, Plus, LogOut, User,
+  Edit, Trash2, CreditCard
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import BackgroundParticles from "@/components/BackgroundParticles";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import AgentEditDialog from "@/components/AgentEditDialog";
+import AgentDeleteDialog from "@/components/AgentDeleteDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,6 +55,10 @@ const Dashboard = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [loading, setLoading] = useState(true);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [agentToEdit, setAgentToEdit] = useState<Agent | null>(null);
+  const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -243,6 +250,42 @@ const Dashboard = () => {
                   ))}
                 </div>
               )}
+
+              {/* Agent Actions Bar */}
+              {selectedAgent && (
+                <div className="flex items-center gap-2 mt-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => {
+                      setAgentToEdit(selectedAgent);
+                      setEditDialogOpen(true);
+                    }}
+                  >
+                    <Edit size={14} />
+                    Edit Agent
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="gap-2 text-destructive hover:text-destructive"
+                    onClick={() => {
+                      setAgentToDelete(selectedAgent);
+                      setDeleteDialogOpen(true);
+                    }}
+                  >
+                    <Trash2 size={14} />
+                    Delete
+                  </Button>
+                  <Link to="/pricing">
+                    <Button variant="ghost" size="sm" className="gap-2">
+                      <CreditCard size={14} />
+                      Manage Subscription
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Stats Grid */}
@@ -414,6 +457,22 @@ const Dashboard = () => {
           </div>
         )}
       </main>
+
+      {/* Edit Dialog */}
+      <AgentEditDialog
+        agent={agentToEdit}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onAgentUpdated={fetchAgents}
+      />
+
+      {/* Delete Dialog */}
+      <AgentDeleteDialog
+        agent={agentToDelete}
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onAgentDeleted={fetchAgents}
+      />
     </div>
   );
 };
