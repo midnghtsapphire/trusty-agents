@@ -6,7 +6,7 @@ import {
   Phone, Calendar, Users, TrendingUp, Clock, CheckCircle2, 
   PhoneIncoming, PhoneOutgoing, PhoneMissed, MessageSquare,
   DollarSign, BarChart3, Settings, Home, Sparkles, Play, Pause, Plus, LogOut, User,
-  Edit, Trash2, CreditCard, Crown
+  Edit, Trash2, CreditCard, Crown, Wrench, ShoppingBag, Stethoscope, Building2, Car, Utensils
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import BackgroundParticles from "@/components/BackgroundParticles";
@@ -14,10 +14,64 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import AgentEditDialog from "@/components/AgentEditDialog";
 import AgentDeleteDialog from "@/components/AgentDeleteDialog";
+import AgentCard from "@/components/AgentCard";
 import CallMinutesDisplay from "@/components/CallMinutesDisplay";
 import UsageAnalytics from "@/components/UsageAnalytics";
 import LowBalanceAlert from "@/components/LowBalanceAlert";
 import { PRICING_TIERS, getTierByProductId, PricingTier } from "@/lib/stripe";
+
+// Agent templates for empty state
+const agentTemplates = [
+  {
+    industry: "Home Services",
+    agentType: "Receptionist",
+    description: "Never miss a plumbing emergency again. Qualify leads, schedule appointments, and dispatch technicians automatically.",
+    roiStats: "$18k/mo",
+    timeSaved: "40hrs/week",
+    icon: <Wrench size={24} />,
+    popular: true,
+  },
+  {
+    industry: "Dental Office",
+    agentType: "Scheduler",
+    description: "Handle appointment bookings, reminders, and rescheduling with HIPAA-compliant AI that patients trust.",
+    roiStats: "$12k/mo",
+    timeSaved: "32hrs/week",
+    icon: <Stethoscope size={24} />,
+  },
+  {
+    industry: "eCommerce",
+    agentType: "Support Bot",
+    description: "Resolve 80% of customer inquiries instantly. Track orders, process returns, and upsell intelligently.",
+    roiStats: "$24k/mo",
+    timeSaved: "60hrs/week",
+    icon: <ShoppingBag size={24} />,
+  },
+  {
+    industry: "Real Estate",
+    agentType: "Lead Qualifier",
+    description: "Pre-qualify buyers 24/7, schedule showings, and answer property questions in real-time.",
+    roiStats: "$32k/mo",
+    timeSaved: "50hrs/week",
+    icon: <Building2 size={24} />,
+  },
+  {
+    industry: "Auto Services",
+    agentType: "Service Advisor",
+    description: "Book service appointments, provide estimates, and follow up on maintenance schedules.",
+    roiStats: "$15k/mo",
+    timeSaved: "35hrs/week",
+    icon: <Car size={24} />,
+  },
+  {
+    industry: "Restaurant",
+    agentType: "Reservation Agent",
+    description: "Handle reservations, takeout orders, and answer menu questions around the clock.",
+    roiStats: "$8k/mo",
+    timeSaved: "28hrs/week",
+    icon: <Utensils size={24} />,
+  },
+];
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -554,21 +608,41 @@ const Dashboard = () => {
             <LowBalanceAlert currentTier={currentTier} />
           </>
         ) : (
-          /* Empty State */
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-magic/30 to-sparkle/30 mb-6">
-              <Sparkles className="text-sparkle" size={40} />
+          /* Empty State - Show Agent Templates */
+          <div className="space-y-8">
+            {/* Header */}
+            <div className="text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-magic/30 to-sparkle/30 mx-auto mb-4">
+                <Sparkles className="text-sparkle" size={32} />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">Choose Your Agent</h2>
+              <p className="text-muted-foreground max-w-lg mx-auto">
+                Select an industry-specific AI agent to deploy. Each is verified and optimized for your business type.
+              </p>
             </div>
-            <h2 className="text-2xl font-bold text-foreground mb-2">No Agents Deployed Yet</h2>
-            <p className="text-muted-foreground mb-6 max-w-md">
-              Deploy your first AI agent to start handling calls 24/7, capturing leads, and never missing a customer again.
-            </p>
-            <Link to="/#agents">
-              <Button variant="magic" size="lg" className="gap-2">
-                <Plus size={18} />
-                Deploy Your First Agent
-              </Button>
-            </Link>
+
+            {/* Agent Template Grid */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {agentTemplates.map((template, index) => (
+                <div
+                  key={template.industry}
+                  className="opacity-0 animate-fade-in-up"
+                  style={{ animationDelay: `${0.1 * index}s` }}
+                >
+                  <AgentCard {...template} />
+                </div>
+              ))}
+            </div>
+
+            {/* Help Text */}
+            <div className="text-center">
+              <p className="text-muted-foreground">
+                Don't see your industry?{" "}
+                <a href="#contact" className="font-medium text-magic hover:underline">
+                  Request a custom agent →
+                </a>
+              </p>
+            </div>
           </div>
         )}
       </main>
