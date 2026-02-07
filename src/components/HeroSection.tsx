@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Phone, Play, Sparkles } from "lucide-react";
 import TrustBadge from "./TrustBadge";
+import genieHero from "@/assets/genie-hero.png";
 
 const HeroSection = () => {
   return (
@@ -11,7 +12,7 @@ const HeroSection = () => {
       <div className="absolute top-40 right-1/4 h-96 w-96 rounded-full bg-sparkle/10 blur-3xl" />
       
       <div className="container relative mx-auto px-4">
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-5xl text-center">
           {/* Trust Badges */}
           <div className="mb-8 flex flex-wrap items-center justify-center gap-3 animate-fade-gentle">
             <TrustBadge variant="verified" />
@@ -35,8 +36,17 @@ const HeroSection = () => {
             automation that actually works.
           </p>
 
+          {/* Genie Hero Image */}
+          <div className="mx-auto mb-10 max-w-2xl animate-fade-gentle" style={{ animationDelay: "0.2s" }}>
+            <img 
+              src={genieHero} 
+              alt="Magic genie lamp with cute AI agent appearing in a poof of sparkles" 
+              className="w-full h-auto rounded-2xl shadow-magic"
+            />
+          </div>
+
           {/* CTA Buttons */}
-          <div className="mb-12 flex flex-col items-center justify-center gap-4 animate-fade-gentle sm:flex-row" style={{ animationDelay: "0.2s" }}>
+          <div className="mb-12 flex flex-col items-center justify-center gap-4 animate-fade-gentle sm:flex-row" style={{ animationDelay: "0.25s" }}>
             <Button variant="poof" size="xl" className="group w-full sm:w-auto">
               <Phone size={20} />
               Try a Live Demo
@@ -49,7 +59,7 @@ const HeroSection = () => {
           </div>
 
           {/* Interactive Demo Card */}
-          <div className="mx-auto max-w-md animate-fade-gentle" style={{ animationDelay: "0.25s" }}>
+          <div className="mx-auto max-w-md animate-fade-gentle" style={{ animationDelay: "0.3s" }}>
             <div className="rounded-2xl glass-card p-6 shadow-magic">
               <div className="mb-4 flex items-center justify-center gap-2">
                 <Sparkles size={20} className="text-sparkle" />
