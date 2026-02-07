@@ -15,6 +15,8 @@ import { useAuth } from "@/hooks/useAuth";
 import AgentEditDialog from "@/components/AgentEditDialog";
 import AgentDeleteDialog from "@/components/AgentDeleteDialog";
 import CallMinutesDisplay from "@/components/CallMinutesDisplay";
+import UsageAnalytics from "@/components/UsageAnalytics";
+import LowBalanceAlert from "@/components/LowBalanceAlert";
 import { PRICING_TIERS, getTierByProductId, PricingTier } from "@/lib/stripe";
 import {
   DropdownMenu,
@@ -464,6 +466,9 @@ const Dashboard = () => {
 
               {/* Sidebar */}
               <div className="space-y-6">
+                {/* Usage Analytics */}
+                <UsageAnalytics currentTier={currentTier} />
+
                 {/* Upcoming Appointments */}
                 <Card className="glass-card border-white/10">
                   <CardHeader className="pb-2">
@@ -544,6 +549,9 @@ const Dashboard = () => {
                 )}
               </div>
             </div>
+
+            {/* Low Balance Alert */}
+            <LowBalanceAlert currentTier={currentTier} />
           </>
         ) : (
           /* Empty State */
