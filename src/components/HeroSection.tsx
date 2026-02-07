@@ -13,13 +13,19 @@ const HeroSection = () => {
       
       <div className="container relative mx-auto px-4">
         <div className="mx-auto max-w-5xl text-center">
-          {/* Trust Badges */}
-          <div className="mb-8 flex flex-wrap items-center justify-center gap-3 animate-fade-gentle">
-            <TrustBadge variant="verified" />
-            <TrustBadge variant="neurodivergent" />
-            <TrustBadge variant="nobluelight" />
-            <TrustBadge variant="green" />
-            <TrustBadge variant="projectmgt" />
+          {/* Trust Badges - Row 1 */}
+          <div className="mb-3 flex flex-wrap items-center justify-center gap-2 animate-fade-gentle">
+            <TrustBadge variant="verified" size="sm" />
+            <TrustBadge variant="security" size="sm" />
+            <TrustBadge variant="codereview" size="sm" />
+            <TrustBadge variant="qa" size="sm" />
+          </div>
+          {/* Trust Badges - Row 2 */}
+          <div className="mb-8 flex flex-wrap items-center justify-center gap-2 animate-fade-gentle" style={{ animationDelay: "0.05s" }}>
+            <TrustBadge variant="neurodivergent" size="sm" />
+            <TrustBadge variant="nobluelight" size="sm" />
+            <TrustBadge variant="green" size="sm" />
+            <TrustBadge variant="projectmgt" size="sm" />
           </div>
 
           {/* Headline */}
