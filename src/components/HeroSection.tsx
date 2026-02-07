@@ -16,8 +16,10 @@ const HeroSection = () => {
           {/* Trust Badges */}
           <div className="mb-8 flex flex-wrap items-center justify-center gap-3 animate-fade-gentle">
             <TrustBadge variant="verified" />
-            <TrustBadge variant="reviewed" />
-            <TrustBadge variant="secure" />
+            <TrustBadge variant="neurodivergent" />
+            <TrustBadge variant="nobluelight" />
+            <TrustBadge variant="green" />
+            <TrustBadge variant="projectmgt" />
           </div>
 
           {/* Headline */}
