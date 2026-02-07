@@ -1,4 +1,4 @@
-import { ArrowRight, Zap, DollarSign, Clock } from "lucide-react";
+import { ArrowRight, Sparkles, DollarSign, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TrustBadge from "./TrustBadge";
 
@@ -23,21 +23,21 @@ const AgentCard = ({
 }: AgentCardProps) => {
   return (
     <div
-      className={`group relative rounded-2xl bg-card p-6 shadow-card transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1 ${
-        popular ? "border-2 border-trust/30" : "border border-border"
+      className={`group relative rounded-2xl glass-card p-6 shadow-card transition-all duration-200 hover:shadow-card-hover ${
+        popular ? "border-2 border-magic/40 shadow-magic" : "border border-border"
       }`}
     >
       {popular && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="inline-flex items-center gap-1 rounded-full bg-trust px-3 py-1 text-xs font-semibold text-trust-foreground">
-            <Zap size={12} />
+          <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-magic to-sparkle px-3 py-1 text-xs font-semibold text-white">
+            <Sparkles size={12} />
             Most Popular
           </span>
         </div>
       )}
 
       <div className="mb-4 flex items-start justify-between">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/5 text-primary">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-magic/20 to-sparkle/20 text-magic">
           {icon}
         </div>
         <TrustBadge variant="verified" size="sm" />
@@ -52,23 +52,24 @@ const AgentCard = ({
 
       <div className="mb-6 flex items-center gap-4">
         <div className="flex items-center gap-1.5 text-sm">
-          <DollarSign size={16} className="text-verified" />
-          <span className="font-semibold text-verified">{roiStats}</span>
+          <DollarSign size={16} className="text-sparkle" />
+          <span className="font-semibold text-sparkle">{roiStats}</span>
           <span className="text-muted-foreground">recovered</span>
         </div>
         <div className="flex items-center gap-1.5 text-sm">
-          <Clock size={16} className="text-trust" />
+          <Clock size={16} className="text-magic" />
           <span className="text-muted-foreground">{timeSaved}</span>
         </div>
       </div>
 
-      <Button className="w-full group-hover:bg-trust group-hover:text-trust-foreground transition-colors" variant="glass">
+      <Button className="w-full group-hover:bg-magic group-hover:text-magic-foreground transition-colors" variant="glass">
+        <Sparkles size={16} />
         Deploy Agent
         <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
       </Button>
 
       <p className="mt-3 text-center text-xs text-muted-foreground">
-        No credit card required • 14-day free trial
+        ✨ No credit card required • 14-day free trial
       </p>
     </div>
   );

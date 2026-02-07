@@ -34,8 +34,8 @@ const HowItWorksSection = () => {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="mx-auto mb-16 max-w-2xl text-center">
-          <span className="mb-4 inline-block rounded-full bg-verified/10 px-4 py-1.5 text-sm font-medium text-verified">
-            Simple Process
+          <span className="mb-4 inline-block rounded-full glass-card bg-sparkle/15 px-4 py-1.5 text-sm font-medium text-sparkle-foreground border border-sparkle/30">
+            ✨ Simple Process
           </span>
           <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
             Live in Less Than 24 Hours
@@ -55,8 +55,8 @@ const HowItWorksSection = () => {
             {steps.map((step, index) => (
               <div
                 key={step.step}
-                className="opacity-0 animate-fade-in-up"
-                style={{ animationDelay: `${0.15 * index}s` }}
+                className="animate-fade-gentle"
+                style={{ animationDelay: `${0.1 * index}s` }}
               >
                 <HowItWorksStep {...step} />
               </div>

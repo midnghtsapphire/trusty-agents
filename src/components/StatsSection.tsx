@@ -8,7 +8,7 @@ const StatsSection = () => {
           <StatsCard
             value="98%"
             label="Accuracy Rate"
-            sublabel="Human-verified performance"
+            sublabel="✨ Human-verified performance"
           />
           <StatsCard
             value="$2.4M"

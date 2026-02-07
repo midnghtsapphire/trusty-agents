@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-semibold ring-offset-background transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -13,12 +13,14 @@ const buttonVariants = cva(
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-md",
         outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-accent/20 hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        hero: "bg-trust text-trust-foreground hover:bg-trust/90 shadow-lg hover:shadow-xl glow-trust font-bold tracking-wide",
-        heroOutline: "border-2 border-trust/30 bg-transparent text-trust hover:bg-trust/10 hover:border-trust/50",
-        verified: "bg-verified text-verified-foreground hover:bg-verified/90 shadow-lg hover:shadow-xl glow-verified font-bold",
-        glass: "bg-card/80 backdrop-blur-sm border border-border/50 text-foreground hover:bg-card/90 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)]",
+        // Magic themed variants
+        magic: "bg-magic text-magic-foreground hover:bg-magic/90 shadow-lg hover:shadow-xl glow-magic font-bold tracking-wide",
+        magicOutline: "border-2 border-magic/40 bg-transparent text-magic hover:bg-magic/10 hover:border-magic/60",
+        sparkle: "bg-sparkle text-sparkle-foreground hover:bg-sparkle/90 shadow-lg hover:shadow-xl glow-sparkle font-bold",
+        glass: "glass-card text-foreground hover:bg-card/90 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)]",
+        poof: "bg-gradient-to-r from-magic via-magic/80 to-sparkle text-white font-bold shadow-magic hover:shadow-lg",
       },
       size: {
         default: "h-10 px-4 py-2",

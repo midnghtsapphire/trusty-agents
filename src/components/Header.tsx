@@ -1,20 +1,20 @@
 import { Button } from "@/components/ui/button";
-import { Shield, Menu } from "lucide-react";
+import { Sparkles, Menu } from "lucide-react";
 import { useState } from "react";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 glass">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <a href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <Shield size={20} className="text-primary-foreground" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-magic to-sparkle shadow-magic">
+            <Sparkles size={20} className="text-white" />
           </div>
           <span className="text-lg font-bold text-foreground">
-            Agent<span className="text-trust">Verified</span>
+            Poof<span className="text-gradient">Agent</span>
           </span>
         </a>
 
@@ -39,7 +39,8 @@ const Header = () => {
           <Button variant="ghost" size="sm">
             Sign In
           </Button>
-          <Button variant="hero" size="sm">
+          <Button variant="magic" size="sm">
+            <Sparkles size={16} />
             Get Started
           </Button>
         </div>
@@ -55,7 +56,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-t border-border bg-background md:hidden">
+        <div className="border-t border-border glass md:hidden">
           <nav className="container mx-auto flex flex-col gap-1 p-4">
             <a href="#agents" className="rounded-lg px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
               Agents
@@ -73,7 +74,8 @@ const Header = () => {
               <Button variant="ghost" className="w-full">
                 Sign In
               </Button>
-              <Button variant="hero" className="w-full">
+              <Button variant="magic" className="w-full">
+                <Sparkles size={16} />
                 Get Started
               </Button>
             </div>

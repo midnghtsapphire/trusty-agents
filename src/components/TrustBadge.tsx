@@ -1,4 +1,4 @@
-import { Shield, CheckCircle2, BadgeCheck } from "lucide-react";
+import { Sparkles, CheckCircle2, Shield } from "lucide-react";
 
 interface TrustBadgeProps {
   variant?: "verified" | "reviewed" | "secure";
@@ -20,19 +20,19 @@ const TrustBadge = ({ variant = "verified", size = "md" }: TrustBadgeProps) => {
 
   const variants = {
     verified: {
-      icon: BadgeCheck,
-      label: "Verified Agent",
-      className: "bg-verified/10 text-verified border-verified/20",
+      icon: Sparkles,
+      label: "✨ Verified Agent",
+      className: "bg-sparkle/15 text-sparkle-foreground border-sparkle/30",
     },
     reviewed: {
       icon: CheckCircle2,
       label: "Human Reviewed",
-      className: "bg-trust/10 text-trust border-trust/20",
+      className: "bg-magic/15 text-magic border-magic/30",
     },
     secure: {
       icon: Shield,
-      label: "Enterprise Secure",
-      className: "bg-primary/10 text-primary border-primary/20",
+      label: "Wish Protected",
+      className: "bg-primary/10 text-primary border-primary/30",
     },
   };
 
@@ -40,7 +40,7 @@ const TrustBadge = ({ variant = "verified", size = "md" }: TrustBadgeProps) => {
 
   return (
     <div
-      className={`inline-flex items-center rounded-full border font-medium ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center rounded-full border font-medium glass-card ${sizeClasses[size]} ${className}`}
     >
       <Icon size={iconSizes[size]} className="flex-shrink-0" />
       <span>{label}</span>
