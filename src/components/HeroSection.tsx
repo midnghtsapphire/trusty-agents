@@ -60,7 +60,7 @@ const HeroSection = () => {
 
           {/* Interactive Demo Card */}
           <div className="mx-auto max-w-md animate-fade-gentle" style={{ animationDelay: "0.3s" }}>
-            <div className="rounded-2xl glass-card p-6 shadow-magic">
+            <div className="rounded-2xl glass-card p-6 shadow-magic border border-white/10">
               <div className="mb-4 flex items-center justify-center gap-2">
                 <Sparkles size={20} className="text-sparkle" />
                 <span className="text-sm font-medium text-muted-foreground">

@@ -14,7 +14,7 @@ const HowItWorksStep = ({ step, title, description, icon }: HowItWorksStepProps)
       </div>
       
       {/* Icon container */}
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl glass-card bg-gradient-to-br from-magic/10 to-sparkle/10 text-magic">
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl glass-card border border-white/10 bg-gradient-to-br from-magic/15 to-sparkle/15 text-magic">
         {icon}
       </div>
       

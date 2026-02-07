@@ -69,7 +69,7 @@ const testimonials: Testimonial[] = [
 
 const TestimonialsSection = () => {
   return (
-    <section id="testimonials" className="bg-secondary/20 py-20 md:py-32">
+    <section id="testimonials" className="glass-dark border-y border-white/10 py-20 md:py-32">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="mx-auto mb-16 max-w-2xl text-center">
@@ -89,7 +89,7 @@ const TestimonialsSection = () => {
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.author}
-              className="rounded-2xl glass-card p-6 shadow-card transition-all duration-200 hover:shadow-card-hover border border-border"
+              className="rounded-2xl glass-card p-6 shadow-card transition-all duration-300 hover:shadow-card-hover border border-white/10"
               style={{ animationDelay: `${0.05 * index}s` }}
             >
               {/* Quote Icon */}
