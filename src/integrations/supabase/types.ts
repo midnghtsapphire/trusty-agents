@@ -80,12 +80,117 @@ export type Database = {
         }
         Relationships: []
       }
+      call_usage: {
+        Row: {
+          agent_id: string
+          call_ended_at: string | null
+          call_started_at: string
+          created_at: string
+          id: string
+          minutes_used: number
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          call_ended_at?: string | null
+          call_started_at: string
+          created_at?: string
+          id?: string
+          minutes_used: number
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          call_ended_at?: string | null
+          call_started_at?: string
+          created_at?: string
+          id?: string
+          minutes_used?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_usage_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_purchases: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          id: string
+          minutes_purchased: number
+          stripe_payment_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          id?: string
+          minutes_purchased: number
+          stripe_payment_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          minutes_purchased?: number
+          stripe_payment_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_credits: {
+        Row: {
+          created_at: string
+          id: string
+          included_minutes: number
+          last_reset_at: string
+          purchased_minutes: number
+          updated_at: string
+          used_minutes: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          included_minutes?: number
+          last_reset_at?: string
+          purchased_minutes?: number
+          updated_at?: string
+          used_minutes?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          included_minutes?: number
+          last_reset_at?: string
+          purchased_minutes?: number
+          updated_at?: string
+          used_minutes?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      deduct_call_minutes: {
+        Args: { p_agent_id: string; p_minutes: number; p_user_id: string }
+        Returns: boolean
+      }
+      reset_monthly_minutes: {
+        Args: { p_tier_minutes: number; p_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
