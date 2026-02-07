@@ -26,30 +26,36 @@ const DemoVideo = () => {
   );
 
   const ensureNarrationReady = async () => {
-    if (narrationRef.current) return;
+    if (narrationRef.current) return true;
+    if (narrationStatus === "error") return false; // Don't retry failed attempts
 
     setNarrationStatus("loading");
-    const { data, error } = await supabase.functions.invoke("generate-audio", {
-      body: {
-        type: "tts",
-        text: narrationText,
-      },
-    });
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-audio", {
+        body: {
+          type: "tts",
+          text: narrationText,
+        },
+      });
 
-    if (error || !data?.audioContent) {
-      console.error("Voiceover generation failed", error);
+      if (error || !data?.audioContent) {
+        console.warn("Voiceover unavailable, continuing with captions only");
+        setNarrationStatus("error");
+        return false;
+      }
+
+      const audio = new Audio(`data:audio/mpeg;base64,${data.audioContent}`);
+      audio.preload = "auto";
+      audio.volume = 0.9;
+
+      narrationRef.current = audio;
+      setNarrationStatus("ready");
+      return true;
+    } catch (err) {
+      console.warn("Voiceover generation failed, continuing with captions only", err);
       setNarrationStatus("error");
-      return;
+      return false;
     }
-
-    const audio = new Audio(`data:audio/mpeg;base64,${data.audioContent}`);
-    audio.preload = "auto";
-
-    // Keep audio reasonably loud but not clipped.
-    audio.volume = 0.9;
-
-    narrationRef.current = audio;
-    setNarrationStatus("ready");
   };
 
   const playBoth = async () => {
@@ -60,8 +66,10 @@ const DemoVideo = () => {
     // and play a separate voiceover track for reliable audio on all browsers.
     video.muted = true;
 
+    // Try to load narration, but don't block playback if it fails
+    let audioAvailable = false;
     if (!isMuted) {
-      await ensureNarrationReady();
+      audioAvailable = await ensureNarrationReady();
     }
 
     try {
@@ -69,7 +77,7 @@ const DemoVideo = () => {
       setIsPlaying(true);
 
       const narration = narrationRef.current;
-      if (narration && !isMuted) {
+      if (narration && !isMuted && audioAvailable) {
         narration.currentTime = 0;
         await narration.play();
       }
@@ -171,18 +179,20 @@ const DemoVideo = () => {
 
       {/* Controls */}
       <div className="absolute bottom-4 right-4 flex gap-2">
-        <button
-          onClick={toggleMute}
-          className="p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-colors"
-          title={isMuted ? "Unmute voiceover" : "Mute voiceover"}
-          aria-label={isMuted ? "Unmute voiceover" : "Mute voiceover"}
-        >
-          {isMuted ? (
-            <VolumeX size={18} className="text-muted-foreground" />
-          ) : (
-            <Volume2 size={18} className="text-foreground" />
-          )}
-        </button>
+        {narrationStatus !== "error" && (
+          <button
+            onClick={toggleMute}
+            className="p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-colors"
+            title={isMuted ? "Unmute voiceover" : "Mute voiceover"}
+            aria-label={isMuted ? "Unmute voiceover" : "Mute voiceover"}
+          >
+            {isMuted ? (
+              <VolumeX size={18} className="text-muted-foreground" />
+            ) : (
+              <Volume2 size={18} className="text-foreground" />
+            )}
+          </button>
+        )}
         <button
           onClick={toggleFullscreen}
           className="p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-colors"
@@ -200,11 +210,8 @@ const DemoVideo = () => {
           <p className="mt-1 text-sm font-semibold text-foreground">
             1) Answer instantly • 2) Qualify lead • 3) Book appointment • 4) Review dashboard
           </p>
-          {!isMuted && narrationStatus === "loading" && (
-            <p className="mt-1 text-xs text-muted-foreground">Generating voiceover…</p>
-          )}
-          {!isMuted && narrationStatus === "error" && (
-            <p className="mt-1 text-xs text-destructive">Voiceover failed to load—try again.</p>
+          {narrationStatus === "loading" && (
+            <p className="mt-1 text-xs text-muted-foreground">Loading voiceover…</p>
           )}
         </div>
       </div>
