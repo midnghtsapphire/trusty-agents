@@ -6,7 +6,7 @@ import {
   Phone, Calendar, Users, TrendingUp, Clock, CheckCircle2, 
   PhoneIncoming, PhoneOutgoing, PhoneMissed, MessageSquare,
   DollarSign, BarChart3, Settings, Home, Sparkles, Play, Pause, Plus, LogOut, User,
-  Edit, Trash2, CreditCard
+  Edit, Trash2, CreditCard, Crown
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import BackgroundParticles from "@/components/BackgroundParticles";
@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import AgentEditDialog from "@/components/AgentEditDialog";
 import AgentDeleteDialog from "@/components/AgentDeleteDialog";
+import { PRICING_TIERS, getTierByProductId, PricingTier } from "@/lib/stripe";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,6 +60,7 @@ const Dashboard = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [agentToEdit, setAgentToEdit] = useState<Agent | null>(null);
   const [agentToDelete, setAgentToDelete] = useState<Agent | null>(null);
+  const [currentTier, setCurrentTier] = useState<PricingTier | null>(null);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -66,6 +68,33 @@ const Dashboard = () => {
     await signOut();
     navigate("/");
   };
+
+  // Check subscription status
+  useEffect(() => {
+    const checkSubscription = async () => {
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        if (!session.session) return;
+
+        const { data, error } = await supabase.functions.invoke("check-subscription", {
+          headers: {
+            Authorization: `Bearer ${session.session.access_token}`,
+          },
+        });
+
+        if (error) throw error;
+
+        if (data?.subscribed && data?.product_id) {
+          const tier = getTierByProductId(data.product_id);
+          setCurrentTier(tier);
+        }
+      } catch (error) {
+        console.error("Error checking subscription:", error);
+      }
+    };
+
+    checkSubscription();
+  }, []);
 
   useEffect(() => {
     fetchAgents();
@@ -156,9 +185,24 @@ const Dashboard = () => {
           </Link>
 
           <div className="flex items-center gap-4">
+            {/* Subscription Badge */}
+            <Link to="/pricing">
+              {currentTier ? (
+                <div className="flex items-center gap-2 glass-card px-3 py-1.5 rounded-full border border-sparkle/30 bg-sparkle/10 hover:bg-sparkle/20 transition-colors cursor-pointer">
+                  <Crown size={14} className="text-sparkle" />
+                  <span className="text-sm font-medium text-sparkle">{PRICING_TIERS[currentTier].name}</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 glass-card px-3 py-1.5 rounded-full border border-white/10 hover:border-magic/30 transition-colors cursor-pointer">
+                  <Sparkles size={14} className="text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">Free Plan</span>
+                </div>
+              )}
+            </Link>
+
             {selectedAgent && (
               <>
-                <div className="flex items-center gap-2 glass-card px-3 py-1.5 rounded-full border border-white/10">
+                <div className="hidden md:flex items-center gap-2 glass-card px-3 py-1.5 rounded-full border border-white/10">
                   <div className={`w-2 h-2 rounded-full ${selectedAgent.status === "active" ? "bg-sparkle animate-pulse" : "bg-muted-foreground"}`} />
                   <span className="text-sm text-foreground/80">{selectedAgent.status === "active" ? "Agent Active" : "Agent Paused"}</span>
                 </div>
@@ -168,7 +212,7 @@ const Dashboard = () => {
                   onClick={() => toggleAgentStatus(selectedAgent)}
                 >
                   {selectedAgent.status === "active" ? <Pause size={16} /> : <Play size={16} />}
-                  {selectedAgent.status === "active" ? "Pause" : "Resume"}
+                  <span className="hidden sm:inline ml-1">{selectedAgent.status === "active" ? "Pause" : "Resume"}</span>
                 </Button>
               </>
             )}
