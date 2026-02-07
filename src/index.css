@@ -13,25 +13,25 @@
       hsl(315 50% 8%) 30%,
       hsl(325 45% 6%) 60%,
       hsl(320 55% 4%) 100%);
-    --foreground: 45 100% 96%;
+    --foreground: 40 30% 85%;
 
     --card: 320 45% 10%;
-    --card-foreground: 45 100% 96%;
+    --card-foreground: 40 30% 85%;
 
     --popover: 320 45% 10%;
-    --popover-foreground: 45 100% 96%;
+    --popover-foreground: 40 30% 85%;
 
     /* Primary - Warm Cream/Gold on dark */
-    --primary: 45 100% 96%;
+    --primary: 40 40% 88%;
     --primary-foreground: 320 55% 6%;
 
     /* Secondary - Deeper Rose */
     --secondary: 320 40% 12%;
-    --secondary-foreground: 45 100% 96%;
+    --secondary-foreground: 40 30% 85%;
 
     /* Muted - Dark Rose */
     --muted: 320 35% 10%;
-    --muted-foreground: 320 20% 60%;
+    --muted-foreground: 320 15% 55%;
 
     /* Accent - Rich Gold */
     --accent: 45 90% 50%;
