@@ -267,21 +267,58 @@ const Dashboard = () => {
                 </p>
               </div>
               <div className="flex items-center gap-4">
-                {/* Agent Slots Display */}
-                <div className="glass-card px-4 py-2 rounded-xl border border-white/10">
-                  <div className="flex items-center gap-2">
-                    <Users size={16} className="text-magic" />
-                    <span className="text-sm text-muted-foreground">Agent Slots:</span>
+                {/* Agent Slots Progress Display */}
+                <div className="glass-card px-4 py-3 rounded-xl border border-white/10 min-w-[200px]">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Users size={16} className="text-magic" />
+                      <span className="text-sm text-muted-foreground">Agent Slots</span>
+                    </div>
                     <span className="text-sm font-semibold text-foreground">
                       {agents.length} / {currentTier ? PRICING_TIERS[currentTier].agentLimit : 1}
                     </span>
                   </div>
-                  {currentTier && agents.length >= PRICING_TIERS[currentTier].agentLimit && (
-                    <p className="text-xs text-sparkle mt-1">Upgrade for more slots</p>
-                  )}
-                  {!currentTier && agents.length >= 1 && (
-                    <p className="text-xs text-sparkle mt-1">Subscribe for more slots</p>
-                  )}
+                  {/* Progress Bar */}
+                  {(() => {
+                    const limit = currentTier ? PRICING_TIERS[currentTier].agentLimit : 1;
+                    const usage = agents.length / limit;
+                    const getColorClass = () => {
+                      if (usage >= 1) return "bg-destructive";
+                      if (usage >= 0.75) return "bg-[hsl(45_93%_47%)]";
+                      return "bg-sparkle";
+                    };
+                    const getGlowClass = () => {
+                      if (usage >= 1) return "shadow-[0_0_10px_hsl(0_62%_50%/0.5)]";
+                      if (usage >= 0.75) return "shadow-[0_0_10px_hsl(45_93%_47%/0.5)]";
+                      return "shadow-[0_0_10px_hsl(40_95%_55%/0.5)]";
+                    };
+                    return (
+                      <div className="relative h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                        <div 
+                          className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${getColorClass()} ${getGlowClass()}`}
+                          style={{ width: `${Math.min(usage * 100, 100)}%` }}
+                        />
+                      </div>
+                    );
+                  })()}
+                  {/* Status Message */}
+                  {(() => {
+                    const limit = currentTier ? PRICING_TIERS[currentTier].agentLimit : 1;
+                    const remaining = limit - agents.length;
+                    if (remaining <= 0) {
+                      return (
+                        <Link to="/pricing" className="block">
+                          <p className="text-xs text-destructive mt-2 hover:underline cursor-pointer">
+                            ⚠️ Limit reached — Upgrade for more
+                          </p>
+                        </Link>
+                      );
+                    }
+                    if (remaining === 1) {
+                      return <p className="text-xs text-[hsl(45_93%_47%)] mt-2">⚡ 1 slot remaining</p>;
+                    }
+                    return <p className="text-xs text-sparkle/70 mt-2">✨ {remaining} slots available</p>;
+                  })()}
                 </div>
                 <Link to="/#agents">
                   <Button 
