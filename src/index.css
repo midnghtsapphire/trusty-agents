@@ -7,32 +7,31 @@
 @layer base {
   :root {
     /* PoofAgent - Warm Magic Palette (No Blue Light) */
-    --background: 280 20% 96%;
+    --background: 320 40% 20%;
     --background-gradient: linear-gradient(180deg, 
-      hsl(280 25% 95%) 0%, 
-      hsl(300 20% 94%) 25%,
-      hsl(320 15% 95%) 50%,
-      hsl(35 30% 95%) 75%,
-      hsl(280 20% 96%) 100%);
-    --foreground: 280 30% 12%;
+      hsl(320 45% 22%) 0%, 
+      hsl(310 40% 25%) 30%,
+      hsl(330 35% 20%) 60%,
+      hsl(320 45% 18%) 100%);
+    --foreground: 45 100% 96%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 280 30% 12%;
+    --card: 320 35% 28%;
+    --card-foreground: 45 100% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 280 30% 12%;
+    --popover: 320 35% 28%;
+    --popover-foreground: 45 100% 96%;
 
-    /* Primary - Deep Plum/Purple (warm, no blue) */
-    --primary: 280 45% 25%;
-    --primary-foreground: 45 100% 96%;
+    /* Primary - Warm Cream/Gold on dark */
+    --primary: 45 100% 96%;
+    --primary-foreground: 320 45% 18%;
 
-    /* Secondary - Warm Rose Gray */
-    --secondary: 330 10% 95%;
-    --secondary-foreground: 280 30% 12%;
+    /* Secondary - Deeper Rose */
+    --secondary: 320 30% 32%;
+    --secondary-foreground: 45 100% 96%;
 
-    /* Muted - Soft Lavender Gray */
-    --muted: 280 10% 94%;
-    --muted-foreground: 280 15% 40%;
+    /* Muted - Dark Rose */
+    --muted: 320 25% 30%;
+    --muted-foreground: 320 15% 70%;
 
     /* Accent - Rich Gold */
     --accent: 45 90% 50%;
@@ -54,40 +53,40 @@
     --destructive: 350 80% 55%;
     --destructive-foreground: 45 100% 96%;
 
-    --border: 280 15% 88%;
-    --input: 280 15% 88%;
-    --ring: 280 45% 35%;
+    --border: 320 30% 35%;
+    --input: 320 30% 35%;
+    --ring: 40 90% 55%;
 
     --radius: 1rem;
 
     /* Gradients - All warm tones, no blue */
-    --gradient-hero: linear-gradient(135deg, hsl(280 45% 20%) 0%, hsl(280 50% 35%) 50%, hsl(320 45% 40%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100% / 0.9) 0%, hsl(280 15% 98% / 0.8) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(320 45% 18%) 0%, hsl(310 40% 25%) 50%, hsl(330 35% 22%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(320 35% 30% / 0.9) 0%, hsl(320 40% 25% / 0.8) 100%);
     --gradient-magic: linear-gradient(135deg, hsl(280 60% 55%) 0%, hsl(320 55% 50%) 50%, hsl(40 90% 55%) 100%);
-    --gradient-glow: radial-gradient(ellipse at center, hsl(280 60% 55% / 0.2) 0%, transparent 70%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(280 60% 55% / 0.25) 0%, transparent 70%);
     --gradient-sparkle: linear-gradient(135deg, hsl(40 95% 55%) 0%, hsl(35 90% 60%) 100%);
-    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.4) 0%, hsl(280 20% 98% / 0.2) 100%);
+    --gradient-glass: linear-gradient(135deg, hsl(320 35% 35% / 0.6) 0%, hsl(320 40% 28% / 0.4) 100%);
 
     /* Shadows - Warm purple tones */
-    --shadow-sm: 0 1px 2px 0 hsl(280 30% 15% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(280 30% 15% / 0.1), 0 2px 4px -2px hsl(280 30% 15% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(280 30% 15% / 0.1), 0 4px 6px -4px hsl(280 30% 15% / 0.1);
-    --shadow-xl: 0 20px 25px -5px hsl(280 30% 15% / 0.15), 0 8px 10px -6px hsl(280 30% 15% / 0.1);
-    --shadow-card: 0 0 0 1px hsl(280 15% 88%), 0 4px 6px -1px hsl(280 30% 15% / 0.08);
-    --shadow-card-hover: 0 0 0 1px hsl(280 60% 55% / 0.4), 0 20px 25px -5px hsl(280 30% 15% / 0.15);
-    --shadow-glow: 0 0 40px hsl(280 60% 55% / 0.25);
-    --shadow-magic: 0 0 60px hsl(280 60% 55% / 0.3), 0 0 100px hsl(40 90% 55% / 0.2);
-    --shadow-glass: inset 0 1px 1px hsl(0 0% 100% / 0.5), 0 8px 32px hsl(280 30% 15% / 0.1);
+    --shadow-sm: 0 1px 2px 0 hsl(320 45% 10% / 0.2);
+    --shadow-md: 0 4px 6px -1px hsl(320 45% 10% / 0.25), 0 2px 4px -2px hsl(320 45% 10% / 0.2);
+    --shadow-lg: 0 10px 15px -3px hsl(320 45% 10% / 0.25), 0 4px 6px -4px hsl(320 45% 10% / 0.2);
+    --shadow-xl: 0 20px 25px -5px hsl(320 45% 10% / 0.3), 0 8px 10px -6px hsl(320 45% 10% / 0.2);
+    --shadow-card: 0 0 0 1px hsl(320 30% 40% / 0.3), 0 4px 6px -1px hsl(320 45% 10% / 0.2);
+    --shadow-card-hover: 0 0 0 1px hsl(40 90% 55% / 0.4), 0 20px 25px -5px hsl(320 45% 10% / 0.3);
+    --shadow-glow: 0 0 40px hsl(280 60% 55% / 0.35);
+    --shadow-magic: 0 0 60px hsl(280 60% 55% / 0.4), 0 0 100px hsl(40 90% 55% / 0.25);
+    --shadow-glass: inset 0 1px 1px hsl(320 30% 50% / 0.3), 0 8px 32px hsl(320 45% 10% / 0.25);
 
     /* Sidebar */
-    --sidebar-background: 280 15% 98%;
-    --sidebar-foreground: 280 30% 20%;
-    --sidebar-primary: 280 45% 25%;
-    --sidebar-primary-foreground: 45 100% 96%;
-    --sidebar-accent: 280 10% 94%;
-    --sidebar-accent-foreground: 280 45% 25%;
-    --sidebar-border: 280 15% 88%;
-    --sidebar-ring: 280 60% 55%;
+    --sidebar-background: 320 40% 15%;
+    --sidebar-foreground: 45 100% 96%;
+    --sidebar-primary: 40 90% 55%;
+    --sidebar-primary-foreground: 320 45% 15%;
+    --sidebar-accent: 320 30% 25%;
+    --sidebar-accent-foreground: 45 100% 96%;
+    --sidebar-border: 320 30% 35%;
+    --sidebar-ring: 40 90% 55%;
   }
 
   .dark {
@@ -193,18 +192,18 @@
   }
 
   .glass-card {
-    background: hsl(0 0% 100% / 0.7);
+    background: hsl(320 35% 30% / 0.7);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid hsl(0 0% 100% / 0.4);
+    border: 1px solid hsl(320 30% 45% / 0.4);
     box-shadow: var(--shadow-glass);
   }
 
   .glass-dark {
-    background: hsl(280 30% 15% / 0.6);
+    background: hsl(320 40% 20% / 0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid hsl(280 30% 30% / 0.3);
+    border: 1px solid hsl(320 30% 35% / 0.4);
   }
 
   .shadow-card {
