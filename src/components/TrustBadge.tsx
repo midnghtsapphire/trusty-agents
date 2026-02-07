@@ -1,7 +1,7 @@
-import { Sparkles, CheckCircle2, Shield } from "lucide-react";
+import { Sparkles, CheckCircle2, Shield, Brain, Sun, Leaf, FolderKanban } from "lucide-react";
 
 interface TrustBadgeProps {
-  variant?: "verified" | "reviewed" | "secure";
+  variant?: "verified" | "reviewed" | "secure" | "neurodivergent" | "nobluelight" | "green" | "projectmgt";
   size?: "sm" | "md" | "lg";
 }
 
@@ -32,6 +32,26 @@ const TrustBadge = ({ variant = "verified", size = "md" }: TrustBadgeProps) => {
     secure: {
       icon: Shield,
       label: "Wish Protected",
+      className: "bg-primary/15 text-primary border-primary/30 hover:bg-primary/25 hover:shadow-[0_0_20px_hsl(45_100%_96%/0.3)] hover:border-primary/50",
+    },
+    neurodivergent: {
+      icon: Brain,
+      label: "🧠 Neurodivergent Friendly",
+      className: "bg-magic/20 text-magic border-magic/40 hover:bg-magic/30 hover:shadow-[0_0_20px_hsl(280_60%_55%/0.4)] hover:border-magic/60",
+    },
+    nobluelight: {
+      icon: Sun,
+      label: "☀️ No Blue Light",
+      className: "bg-sparkle/20 text-sparkle border-sparkle/40 hover:bg-sparkle/30 hover:shadow-[0_0_20px_hsl(40_95%_55%/0.4)] hover:border-sparkle/60",
+    },
+    green: {
+      icon: Leaf,
+      label: "🌿 Green Coding",
+      className: "bg-[hsl(120_50%_35%/0.25)] text-[hsl(120_50%_65%)] border-[hsl(120_50%_45%/0.5)] hover:bg-[hsl(120_50%_35%/0.35)] hover:shadow-[0_0_20px_hsl(120_50%_45%/0.4)] hover:border-[hsl(120_50%_55%/0.7)]",
+    },
+    projectmgt: {
+      icon: FolderKanban,
+      label: "📋 Project Management",
       className: "bg-primary/15 text-primary border-primary/30 hover:bg-primary/25 hover:shadow-[0_0_20px_hsl(45_100%_96%/0.3)] hover:border-primary/50",
     },
   };
