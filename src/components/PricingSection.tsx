@@ -1,70 +1,51 @@
 import { Button } from "@/components/ui/button";
-import { Check, Sparkles, Zap, Building2 } from "lucide-react";
+import { Check, Sparkles, Zap, Building2, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { PRICING_TIERS } from "@/lib/stripe";
 
 interface PricingTier {
   name: string;
   price: string;
   period: string;
   description: string;
-  features: string[];
+  features: readonly string[];
   cta: string;
   popular?: boolean;
   icon: React.ReactNode;
+  tierKey: string;
 }
 
 const tiers: PricingTier[] = [
   {
-    name: "Starter",
-    price: "$97",
+    name: PRICING_TIERS.starter.name,
+    price: `$${PRICING_TIERS.starter.price}`,
     period: "/month",
     description: "Perfect for small businesses getting started with AI automation.",
-    features: [
-      "1 Verified AI Agent",
-      "500 minutes/month",
-      "Basic call analytics",
-      "Email support",
-      "Standard voice quality",
-      "Business hours only",
-    ],
+    features: PRICING_TIERS.starter.features,
     cta: "Start Free Trial",
     icon: <Sparkles size={24} />,
+    tierKey: "starter",
   },
   {
-    name: "Professional",
-    price: "$297",
+    name: PRICING_TIERS.pro.name,
+    price: `$${PRICING_TIERS.pro.price}`,
     period: "/month",
     description: "For growing businesses that need 24/7 coverage and advanced features.",
-    features: [
-      "3 Verified AI Agents",
-      "2,000 minutes/month",
-      "Advanced analytics dashboard",
-      "Priority support",
-      "HD voice quality",
-      "24/7 availability",
-      "Custom voice & personality",
-      "CRM integrations",
-    ],
+    features: PRICING_TIERS.pro.features,
     cta: "Start Free Trial",
     popular: true,
     icon: <Zap size={24} />,
+    tierKey: "pro",
   },
   {
-    name: "Enterprise",
-    price: "Custom",
-    period: "",
+    name: PRICING_TIERS.business.name,
+    price: `$${PRICING_TIERS.business.price}`,
+    period: "/month",
     description: "Unlimited agents and white-glove service for large organizations.",
-    features: [
-      "Unlimited Agents",
-      "Unlimited minutes",
-      "Custom AI training",
-      "Dedicated account manager",
-      "SLA guarantees",
-      "HIPAA & SOC 2 compliance",
-      "On-premise deployment option",
-      "Custom integrations",
-    ],
-    cta: "Contact Sales",
+    features: PRICING_TIERS.business.features,
+    cta: "Get Started",
     icon: <Building2 size={24} />,
+    tierKey: "business",
   },
 ];
 
@@ -130,14 +111,17 @@ const PricingSection = () => {
                 ))}
               </ul>
 
-              <Button
-                variant={tier.popular ? "poof" : "glass"}
-                className="w-full"
-                size="lg"
-              >
-                {tier.popular && <Sparkles size={16} />}
-                {tier.cta}
-              </Button>
+              <Link to="/pricing">
+                <Button
+                  variant={tier.popular ? "poof" : "glass"}
+                  className="w-full"
+                  size="lg"
+                >
+                  {tier.popular && <Sparkles size={16} />}
+                  {tier.cta}
+                  <ArrowRight size={16} className="ml-2" />
+                </Button>
+              </Link>
             </div>
           ))}
         </div>

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Sparkles, Menu } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -36,13 +37,17 @@ const Header = () => {
 
         {/* CTA Buttons */}
         <div className="hidden items-center gap-3 md:flex">
-          <Button variant="ghost" size="sm">
-            Sign In
-          </Button>
-          <Button variant="magic" size="sm">
-            <Sparkles size={16} />
-            Get Started
-          </Button>
+          <Link to="/auth">
+            <Button variant="ghost" size="sm">
+              Sign In
+            </Button>
+          </Link>
+          <Link to="/pricing">
+            <Button variant="magic" size="sm">
+              <Sparkles size={16} />
+              Get Started
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -71,13 +76,17 @@ const Header = () => {
               About
             </a>
             <div className="mt-4 flex flex-col gap-2">
-              <Button variant="ghost" className="w-full">
-                Sign In
-              </Button>
-              <Button variant="magic" className="w-full">
-                <Sparkles size={16} />
-                Get Started
-              </Button>
+              <Link to="/auth">
+                <Button variant="ghost" className="w-full">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/pricing">
+                <Button variant="magic" className="w-full">
+                  <Sparkles size={16} />
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </nav>
         </div>
