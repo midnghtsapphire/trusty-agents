@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import StatsSection from "@/components/StatsSection";
 import AgentsSection from "@/components/AgentsSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
+import HowItWorksDetailedSection from "@/components/HowItWorksDetailedSection";
 import PricingSection from "@/components/PricingSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import FAQSection from "@/components/FAQSection";
@@ -26,14 +27,16 @@ const Index = () => {
         <GlowingDivider variant="sparkle" />
         <HowItWorksSection />
         <GlowingDivider variant="dual" />
+        <HowItWorksDetailedSection />
+        <GlowingDivider variant="magic" />
         <PricingSection />
-        <GlowingDivider variant="magic" />
-        <TestimonialsSection />
         <GlowingDivider variant="sparkle" />
-        <FAQSection />
+        <TestimonialsSection />
         <GlowingDivider variant="dual" />
-        <AboutSection />
+        <FAQSection />
         <GlowingDivider variant="magic" />
+        <AboutSection />
+        <GlowingDivider variant="sparkle" />
         <CTASection />
       </main>
       <Footer />
