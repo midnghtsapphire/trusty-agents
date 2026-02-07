@@ -6,32 +6,32 @@
 
 @layer base {
   :root {
-    /* PoofAgent - Deep Warm Magic Palette (Neurodivergent-Friendly, No Blue Light) */
-    --background: 320 45% 10%;
+    /* PoofAgent - Ultra Dark Magic Palette (Neurodivergent-Friendly, No Blue Light) */
+    --background: 320 50% 5%;
     --background-gradient: linear-gradient(180deg, 
-      hsl(320 50% 12%) 0%, 
-      hsl(315 45% 14%) 30%,
-      hsl(325 40% 11%) 60%,
-      hsl(320 50% 9%) 100%);
+      hsl(320 55% 6%) 0%, 
+      hsl(315 50% 8%) 30%,
+      hsl(325 45% 6%) 60%,
+      hsl(320 55% 4%) 100%);
     --foreground: 45 100% 96%;
 
-    --card: 320 40% 16%;
+    --card: 320 45% 10%;
     --card-foreground: 45 100% 96%;
 
-    --popover: 320 40% 16%;
+    --popover: 320 45% 10%;
     --popover-foreground: 45 100% 96%;
 
     /* Primary - Warm Cream/Gold on dark */
     --primary: 45 100% 96%;
-    --primary-foreground: 320 50% 10%;
+    --primary-foreground: 320 55% 6%;
 
     /* Secondary - Deeper Rose */
-    --secondary: 320 35% 18%;
+    --secondary: 320 40% 12%;
     --secondary-foreground: 45 100% 96%;
 
     /* Muted - Dark Rose */
-    --muted: 320 30% 16%;
-    --muted-foreground: 320 20% 65%;
+    --muted: 320 35% 10%;
+    --muted-foreground: 320 20% 60%;
 
     /* Accent - Rich Gold */
     --accent: 45 90% 50%;
@@ -53,39 +53,39 @@
     --destructive: 350 80% 55%;
     --destructive-foreground: 45 100% 96%;
 
-    --border: 320 35% 22%;
-    --input: 320 35% 20%;
+    --border: 320 40% 15%;
+    --input: 320 40% 12%;
     --ring: 40 90% 55%;
 
     --radius: 1rem;
 
-    /* Gradients - All warm tones, no blue, deep dark */
-    --gradient-hero: linear-gradient(135deg, hsl(320 50% 10%) 0%, hsl(315 45% 14%) 50%, hsl(325 40% 11%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(320 40% 18% / 0.9) 0%, hsl(320 45% 14% / 0.8) 100%);
+    /* Gradients - Ultra dark warm tones */
+    --gradient-hero: linear-gradient(135deg, hsl(320 55% 6%) 0%, hsl(315 50% 8%) 50%, hsl(325 45% 5%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(320 45% 12% / 0.9) 0%, hsl(320 50% 8% / 0.8) 100%);
     --gradient-magic: linear-gradient(135deg, hsl(280 60% 55%) 0%, hsl(320 55% 50%) 50%, hsl(40 90% 55%) 100%);
-    --gradient-glow: radial-gradient(ellipse at center, hsl(280 60% 55% / 0.25) 0%, transparent 70%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(280 60% 55% / 0.3) 0%, transparent 70%);
     --gradient-sparkle: linear-gradient(135deg, hsl(40 95% 55%) 0%, hsl(35 90% 60%) 100%);
-    --gradient-glass: linear-gradient(135deg, hsl(320 40% 20% / 0.6) 0%, hsl(320 45% 16% / 0.4) 100%);
+    --gradient-glass: linear-gradient(135deg, hsl(320 45% 12% / 0.5) 0%, hsl(320 50% 8% / 0.3) 100%);
 
-    /* Shadows - Deep warm purple tones */
-    --shadow-sm: 0 1px 2px 0 hsl(320 50% 5% / 0.4);
-    --shadow-md: 0 4px 6px -1px hsl(320 50% 5% / 0.5), 0 2px 4px -2px hsl(320 50% 5% / 0.4);
-    --shadow-lg: 0 10px 15px -3px hsl(320 50% 5% / 0.5), 0 4px 6px -4px hsl(320 50% 5% / 0.4);
-    --shadow-xl: 0 20px 25px -5px hsl(320 50% 5% / 0.6), 0 8px 10px -6px hsl(320 50% 5% / 0.4);
-    --shadow-card: 0 0 0 1px hsl(320 35% 25% / 0.4), 0 4px 6px -1px hsl(320 50% 5% / 0.4);
-    --shadow-card-hover: 0 0 0 1px hsl(40 90% 55% / 0.5), 0 20px 25px -5px hsl(320 50% 5% / 0.5);
-    --shadow-glow: 0 0 40px hsl(280 60% 55% / 0.35);
-    --shadow-magic: 0 0 60px hsl(280 60% 55% / 0.4), 0 0 100px hsl(40 90% 55% / 0.25);
-    --shadow-glass: inset 0 1px 1px hsl(320 35% 35% / 0.3), 0 8px 32px hsl(320 50% 5% / 0.4);
+    /* Shadows - Ultra deep warm tones */
+    --shadow-sm: 0 1px 2px 0 hsl(320 55% 2% / 0.5);
+    --shadow-md: 0 4px 6px -1px hsl(320 55% 2% / 0.6), 0 2px 4px -2px hsl(320 55% 2% / 0.5);
+    --shadow-lg: 0 10px 15px -3px hsl(320 55% 2% / 0.6), 0 4px 6px -4px hsl(320 55% 2% / 0.5);
+    --shadow-xl: 0 20px 25px -5px hsl(320 55% 2% / 0.7), 0 8px 10px -6px hsl(320 55% 2% / 0.5);
+    --shadow-card: 0 0 0 1px hsl(0 0% 100% / 0.05), 0 4px 6px -1px hsl(320 55% 2% / 0.5);
+    --shadow-card-hover: 0 0 0 1px hsl(40 90% 55% / 0.3), 0 20px 25px -5px hsl(320 55% 2% / 0.6), 0 0 60px hsl(280 60% 55% / 0.2);
+    --shadow-glow: 0 0 50px hsl(280 60% 55% / 0.4);
+    --shadow-magic: 0 0 80px hsl(280 60% 55% / 0.5), 0 0 120px hsl(40 90% 55% / 0.3);
+    --shadow-glass: inset 0 1px 1px hsl(0 0% 100% / 0.08), inset 0 -1px 1px hsl(320 55% 2% / 0.3), 0 8px 32px hsl(320 55% 2% / 0.5);
 
     /* Sidebar */
-    --sidebar-background: 320 45% 8%;
+    --sidebar-background: 320 50% 4%;
     --sidebar-foreground: 45 100% 96%;
     --sidebar-primary: 40 90% 55%;
-    --sidebar-primary-foreground: 320 50% 10%;
-    --sidebar-accent: 320 35% 14%;
+    --sidebar-primary-foreground: 320 55% 6%;
+    --sidebar-accent: 320 40% 10%;
     --sidebar-accent-foreground: 45 100% 96%;
-    --sidebar-border: 320 35% 22%;
+    --sidebar-border: 320 40% 15%;
     --sidebar-ring: 40 90% 55%;
   }
 
@@ -182,50 +182,63 @@
     background: var(--gradient-sparkle);
   }
 
-  /* Glassmorphism effects - Enhanced */
+  /* Glassmorphism effects - Ultra Glass */
   .glass {
-    background: linear-gradient(135deg, hsl(320 40% 18% / 0.7) 0%, hsl(320 45% 14% / 0.5) 100%);
-    backdrop-filter: blur(24px) saturate(1.5);
-    -webkit-backdrop-filter: blur(24px) saturate(1.5);
-    border: 1px solid hsl(0 0% 100% / 0.12);
+    background: linear-gradient(135deg, hsl(320 50% 10% / 0.4) 0%, hsl(320 55% 6% / 0.25) 100%);
+    backdrop-filter: blur(40px) saturate(1.8);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8);
+    border: 1px solid hsl(0 0% 100% / 0.08);
     box-shadow: 
-      inset 0 1px 1px hsl(0 0% 100% / 0.1),
-      inset 0 -1px 1px hsl(320 50% 5% / 0.2),
-      0 8px 32px hsl(320 50% 5% / 0.3);
+      inset 0 1px 0 hsl(0 0% 100% / 0.1),
+      inset 0 -1px 0 hsl(320 55% 2% / 0.3),
+      0 16px 48px hsl(320 55% 2% / 0.5);
   }
 
   .glass-card {
-    background: linear-gradient(135deg, hsl(320 40% 18% / 0.8) 0%, hsl(320 45% 14% / 0.6) 100%);
-    backdrop-filter: blur(20px) saturate(1.4);
-    -webkit-backdrop-filter: blur(20px) saturate(1.4);
-    border: 1px solid hsl(0 0% 100% / 0.1);
+    background: linear-gradient(145deg, hsl(320 50% 12% / 0.5) 0%, hsl(320 55% 6% / 0.35) 100%);
+    backdrop-filter: blur(32px) saturate(1.6);
+    -webkit-backdrop-filter: blur(32px) saturate(1.6);
+    border: 1px solid hsl(0 0% 100% / 0.06);
     box-shadow: 
-      inset 0 1px 1px hsl(0 0% 100% / 0.08),
-      inset 0 -1px 1px hsl(320 50% 5% / 0.15),
-      0 4px 24px hsl(320 50% 5% / 0.25);
+      inset 0 1px 0 hsl(0 0% 100% / 0.08),
+      inset 0 -1px 0 hsl(320 55% 2% / 0.25),
+      0 8px 32px hsl(320 55% 2% / 0.4);
   }
 
+  .glass-card:hover,
   .glass-card-hover {
-    background: linear-gradient(135deg, hsl(320 40% 20% / 0.85) 0%, hsl(320 45% 16% / 0.7) 100%);
-    border: 1px solid hsl(0 0% 100% / 0.15);
+    background: linear-gradient(145deg, hsl(320 50% 14% / 0.55) 0%, hsl(320 55% 8% / 0.4) 100%);
+    border: 1px solid hsl(0 0% 100% / 0.1);
     box-shadow: 
-      inset 0 1px 1px hsl(0 0% 100% / 0.12),
-      0 8px 32px hsl(320 50% 5% / 0.35),
-      0 0 40px hsl(280 60% 55% / 0.15);
+      inset 0 1px 0 hsl(0 0% 100% / 0.12),
+      0 12px 48px hsl(320 55% 2% / 0.5),
+      0 0 60px hsl(280 60% 55% / 0.15);
   }
 
   .glass-dark {
-    background: linear-gradient(135deg, hsl(320 45% 12% / 0.9) 0%, hsl(320 50% 8% / 0.85) 100%);
-    backdrop-filter: blur(24px) saturate(1.3);
-    -webkit-backdrop-filter: blur(24px) saturate(1.3);
-    border: 1px solid hsl(0 0% 100% / 0.08);
+    background: linear-gradient(180deg, hsl(320 55% 6% / 0.6) 0%, hsl(320 60% 4% / 0.5) 100%);
+    backdrop-filter: blur(48px) saturate(1.5);
+    -webkit-backdrop-filter: blur(48px) saturate(1.5);
+    border: 1px solid hsl(0 0% 100% / 0.04);
   }
 
   .glass-light {
-    background: linear-gradient(135deg, hsl(320 35% 25% / 0.6) 0%, hsl(320 40% 20% / 0.4) 100%);
-    backdrop-filter: blur(16px) saturate(1.2);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2);
-    border: 1px solid hsl(0 0% 100% / 0.15);
+    background: linear-gradient(135deg, hsl(320 40% 18% / 0.4) 0%, hsl(320 45% 12% / 0.25) 100%);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid hsl(0 0% 100% / 0.1);
+  }
+
+  .glass-intense {
+    background: linear-gradient(145deg, hsl(320 55% 8% / 0.6) 0%, hsl(320 60% 4% / 0.4) 100%);
+    backdrop-filter: blur(60px) saturate(2);
+    -webkit-backdrop-filter: blur(60px) saturate(2);
+    border: 1px solid hsl(0 0% 100% / 0.1);
+    box-shadow: 
+      inset 0 2px 0 hsl(0 0% 100% / 0.1),
+      inset 0 -2px 0 hsl(320 55% 2% / 0.3),
+      0 24px 64px hsl(320 55% 2% / 0.6),
+      0 0 100px hsl(280 60% 55% / 0.2);
   }
 
   .shadow-card {
