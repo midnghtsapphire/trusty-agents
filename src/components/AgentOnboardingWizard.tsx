@@ -7,10 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { 
   Building2, Phone, Calendar, Settings, CheckCircle2, 
-  ArrowRight, ArrowLeft, Sparkles, Globe, Clock, MessageSquare
+  ArrowRight, ArrowLeft, Sparkles, Globe, Clock, MessageSquare, Loader2
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 interface AgentOnboardingWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -46,9 +47,19 @@ const AgentOnboardingWizard = ({
     greeting: "",
     services: "",
   });
+  const [isCreating, setIsCreating] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const progress = (currentStep / steps.length) * 100;
+  
+  // Generate a random AI phone number
+  const generateAIPhoneNumber = () => {
+    const areaCode = Math.floor(Math.random() * 900) + 100;
+    const prefix = Math.floor(Math.random() * 900) + 100;
+    const lineNumber = Math.floor(Math.random() * 9000) + 1000;
+    return `+1 (${areaCode}) ${prefix}-${lineNumber}`;
+  };
 
   const updateField = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -66,9 +77,47 @@ const AgentOnboardingWizard = ({
     }
   };
 
-  const handleLaunch = () => {
-    onOpenChange(false);
-    navigate("/dashboard");
+  const handleLaunch = async () => {
+    setIsCreating(true);
+    
+    const aiPhoneNumber = generateAIPhoneNumber();
+    
+    try {
+      const { error } = await supabase.from("agents").insert({
+        business_name: formData.businessName || `${industry} Business`,
+        owner_name: formData.ownerName || null,
+        email: formData.email || null,
+        phone_option: formData.phoneOption,
+        current_phone: formData.currentPhone || null,
+        ai_phone_number: aiPhoneNumber,
+        calendar_type: formData.calendarType || null,
+        business_hours: formData.businessHours,
+        greeting: formData.greeting || null,
+        services: formData.services || null,
+        industry: industry,
+        agent_type: agentType,
+        status: "active",
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Agent Deployed! 🎉",
+        description: `Your ${industry} ${agentType} is now active at ${aiPhoneNumber}`,
+      });
+
+      onOpenChange(false);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error creating agent:", error);
+      toast({
+        title: "Error",
+        description: "Failed to deploy agent. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const renderStepContent = () => {
@@ -377,9 +426,9 @@ const AgentOnboardingWizard = ({
               <ArrowRight size={16} />
             </Button>
           ) : (
-            <Button variant="poof" onClick={handleLaunch} className="gap-1">
-              <Sparkles size={16} />
-              Launch Agent
+            <Button variant="poof" onClick={handleLaunch} className="gap-1" disabled={isCreating}>
+              {isCreating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+              {isCreating ? "Deploying..." : "Launch Agent"}
             </Button>
           )}
         </div>
