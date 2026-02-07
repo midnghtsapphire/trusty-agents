@@ -5,11 +5,21 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Phone, Calendar, Users, TrendingUp, Clock, CheckCircle2, 
   PhoneIncoming, PhoneOutgoing, PhoneMissed, MessageSquare,
-  DollarSign, BarChart3, Settings, Home, Sparkles, Play, Pause, Plus
+  DollarSign, BarChart3, Settings, Home, Sparkles, Play, Pause, Plus, LogOut, User
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import BackgroundParticles from "@/components/BackgroundParticles";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Agent {
   id: string;
@@ -42,6 +52,13 @@ const Dashboard = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [loading, setLoading] = useState(true);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   useEffect(() => {
     fetchAgents();
@@ -148,9 +165,40 @@ const Dashboard = () => {
                 </Button>
               </>
             )}
-            <Button variant="ghost" size="icon">
-              <Settings size={18} />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user?.user_metadata?.avatar_url} />
+                    <AvatarFallback className="bg-magic/20 text-magic text-sm">
+                      {user?.email?.charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 glass-card border-white/20">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium text-foreground">
+                      {user?.user_metadata?.full_name || "Account"}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {user?.email}
+                    </p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer">
+                  <Settings size={16} className="mr-2" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive focus:text-destructive">
+                  <LogOut size={16} className="mr-2" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

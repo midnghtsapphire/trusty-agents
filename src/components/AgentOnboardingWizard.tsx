@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 interface AgentOnboardingWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -50,6 +51,7 @@ const AgentOnboardingWizard = ({
   const [isCreating, setIsCreating] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const progress = (currentStep / steps.length) * 100;
   
@@ -78,12 +80,23 @@ const AgentOnboardingWizard = ({
   };
 
   const handleLaunch = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to deploy an agent",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+
     setIsCreating(true);
     
     const aiPhoneNumber = generateAIPhoneNumber();
     
     try {
       const { error } = await supabase.from("agents").insert({
+        user_id: user.id,
         business_name: formData.businessName || `${industry} Business`,
         owner_name: formData.ownerName || null,
         email: formData.email || null,

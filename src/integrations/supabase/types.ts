@@ -34,6 +34,7 @@ export type Database = {
           status: string
           total_calls: number | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           agent_type: string
@@ -54,6 +55,7 @@ export type Database = {
           status?: string
           total_calls?: number | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           agent_type?: string
@@ -74,6 +76,7 @@ export type Database = {
           status?: string
           total_calls?: number | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
