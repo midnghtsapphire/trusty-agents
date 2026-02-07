@@ -6,6 +6,7 @@ import BackgroundParticles from "@/components/BackgroundParticles";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useIndustryAudio } from "@/hooks/useIndustryAudio";
+import confetti from "canvas-confetti";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -19,16 +20,48 @@ const PaymentSuccess = () => {
   const minutes = searchParams.get("minutes");
   const isCredits = type === "credits" && minutes;
 
+  // Fire confetti celebration
+  const fireConfetti = useCallback(() => {
+    const duration = 3000;
+    const end = Date.now() + duration;
+
+    const colors = ['#a855f7', '#f59e0b', '#ec4899', '#fbbf24'];
+
+    (function frame() {
+      confetti({
+        particleCount: 4,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: colors
+      });
+      confetti({
+        particleCount: 4,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: colors
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    }());
+  }, []);
+
   // Play happy customer audio on successful purchase
   const playCelebration = useCallback(async () => {
     if (hasPlayedAudio) return;
     setHasPlayedAudio(true);
     
-    // Small delay to let the page render
+    // Fire confetti immediately
+    fireConfetti();
+    
+    // Small delay to let the page render before audio
     setTimeout(() => {
       playHappyCustomer();
     }, 1000);
-  }, [hasPlayedAudio, playHappyCustomer]);
+  }, [hasPlayedAudio, playHappyCustomer, fireConfetti]);
 
   useEffect(() => {
     const addCredits = async () => {
