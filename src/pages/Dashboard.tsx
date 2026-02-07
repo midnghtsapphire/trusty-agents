@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import AgentEditDialog from "@/components/AgentEditDialog";
 import AgentDeleteDialog from "@/components/AgentDeleteDialog";
+import CallMinutesDisplay from "@/components/CallMinutesDisplay";
 import { PRICING_TIERS, getTierByProductId, PricingTier } from "@/lib/stripe";
 import {
   DropdownMenu,
@@ -267,6 +268,9 @@ const Dashboard = () => {
                 </p>
               </div>
               <div className="flex items-center gap-4">
+                {/* Call Minutes Display */}
+                <CallMinutesDisplay currentTier={currentTier} />
+                
                 {/* Agent Slots Progress Display */}
                 <div className="glass-card px-4 py-3 rounded-xl border border-white/10 min-w-[200px]">
                   <div className="flex items-center justify-between mb-2">
