@@ -1,16 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Phone, Calendar, Users, TrendingUp, Clock, CheckCircle2, 
   PhoneIncoming, PhoneOutgoing, PhoneMissed, MessageSquare,
-  DollarSign, BarChart3, Settings, Home, Sparkles, Play, Pause
+  DollarSign, BarChart3, Settings, Home, Sparkles, Play, Pause, Plus
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import BackgroundParticles from "@/components/BackgroundParticles";
+import { supabase } from "@/integrations/supabase/client";
 
-// Mock data
+interface Agent {
+  id: string;
+  business_name: string;
+  industry: string;
+  agent_type: string;
+  ai_phone_number: string | null;
+  status: string;
+  total_calls: number;
+  revenue_recovered: number;
+  created_at: string;
+}
+
+// Mock data for calls
 const recentCalls = [
   { id: 1, caller: "Mike Johnson", phone: "+1 (555) 234-5678", time: "2 mins ago", duration: "4:32", type: "inbound", status: "completed", summary: "Requested plumbing quote for bathroom renovation" },
   { id: 2, caller: "Sarah Williams", phone: "+1 (555) 345-6789", time: "15 mins ago", duration: "2:15", type: "inbound", status: "booked", summary: "Scheduled appointment for Thursday 2PM - leaky faucet" },
@@ -25,15 +38,60 @@ const upcomingAppointments = [
   { id: 3, customer: "Emma Wilson", service: "Drain Cleaning", date: "Fri, Feb 9", time: "3:00 PM", phone: "+1 (555) 890-1234" },
 ];
 
-const stats = [
-  { label: "Total Calls Today", value: "47", change: "+12%", icon: Phone, color: "text-magic" },
-  { label: "Appointments Booked", value: "12", change: "+8%", icon: Calendar, color: "text-sparkle" },
-  { label: "Leads Captured", value: "23", change: "+15%", icon: Users, color: "text-magic" },
-  { label: "Revenue Recovered", value: "$4,850", change: "+22%", icon: DollarSign, color: "text-sparkle" },
-];
-
 const Dashboard = () => {
-  const [agentActive, setAgentActive] = useState(true);
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAgents();
+  }, []);
+
+  const fetchAgents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("agents")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      
+      setAgents(data || []);
+      if (data && data.length > 0) {
+        setSelectedAgent(data[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching agents:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleAgentStatus = async (agent: Agent) => {
+    const newStatus = agent.status === "active" ? "paused" : "active";
+    try {
+      const { error } = await supabase
+        .from("agents")
+        .update({ status: newStatus })
+        .eq("id", agent.id);
+
+      if (error) throw error;
+      
+      setAgents(agents.map(a => a.id === agent.id ? { ...a, status: newStatus } : a));
+      if (selectedAgent?.id === agent.id) {
+        setSelectedAgent({ ...selectedAgent, status: newStatus });
+      }
+    } catch (error) {
+      console.error("Error updating agent status:", error);
+    }
+  };
+
+  const stats = [
+    { label: "Total Calls Today", value: "47", change: "+12%", icon: Phone, color: "text-magic" },
+    { label: "Appointments Booked", value: "12", change: "+8%", icon: Calendar, color: "text-sparkle" },
+    { label: "Leads Captured", value: "23", change: "+15%", icon: Users, color: "text-magic" },
+    { label: "Revenue Recovered", value: "$4,850", change: "+22%", icon: DollarSign, color: "text-sparkle" },
+  ];
 
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
@@ -44,6 +102,18 @@ const Dashboard = () => {
     };
     return styles[status] || styles.completed;
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <BackgroundParticles />
+        <div className="text-center">
+          <Sparkles className="mx-auto text-magic animate-pulse mb-4" size={48} />
+          <p className="text-muted-foreground">Loading your agents...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative">
@@ -62,18 +132,22 @@ const Dashboard = () => {
           </Link>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 glass-card px-3 py-1.5 rounded-full border border-white/10">
-              <div className={`w-2 h-2 rounded-full ${agentActive ? "bg-sparkle animate-pulse" : "bg-muted-foreground"}`} />
-              <span className="text-sm text-foreground/80">{agentActive ? "Agent Active" : "Agent Paused"}</span>
-            </div>
-            <Button
-              variant={agentActive ? "ghost" : "magic"}
-              size="sm"
-              onClick={() => setAgentActive(!agentActive)}
-            >
-              {agentActive ? <Pause size={16} /> : <Play size={16} />}
-              {agentActive ? "Pause" : "Resume"}
-            </Button>
+            {selectedAgent && (
+              <>
+                <div className="flex items-center gap-2 glass-card px-3 py-1.5 rounded-full border border-white/10">
+                  <div className={`w-2 h-2 rounded-full ${selectedAgent.status === "active" ? "bg-sparkle animate-pulse" : "bg-muted-foreground"}`} />
+                  <span className="text-sm text-foreground/80">{selectedAgent.status === "active" ? "Agent Active" : "Agent Paused"}</span>
+                </div>
+                <Button
+                  variant={selectedAgent.status === "active" ? "ghost" : "magic"}
+                  size="sm"
+                  onClick={() => toggleAgentStatus(selectedAgent)}
+                >
+                  {selectedAgent.status === "active" ? <Pause size={16} /> : <Play size={16} />}
+                  {selectedAgent.status === "active" ? "Pause" : "Resume"}
+                </Button>
+              </>
+            )}
             <Button variant="ghost" size="icon">
               <Settings size={18} />
             </Button>
@@ -82,159 +156,215 @@ const Dashboard = () => {
       </header>
 
       <main className="relative z-10 pt-24 pb-12 container mx-auto px-4">
-        {/* Page Title */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Agent Dashboard</h1>
-          <p className="text-muted-foreground">Home Services Receptionist • Active 24/7</p>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          {stats.map((stat) => (
-            <Card key={stat.label} className="glass-card border-white/10">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <stat.icon className={`${stat.color}`} size={20} />
-                  <span className="text-xs text-sparkle font-medium">{stat.change}</span>
+        {/* Agents List */}
+        {agents.length > 0 ? (
+          <>
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground mb-2">Agent Dashboard</h1>
+                  <p className="text-muted-foreground">
+                    {selectedAgent?.industry} {selectedAgent?.agent_type} • {selectedAgent?.status === "active" ? "Active 24/7" : "Paused"}
+                  </p>
                 </div>
-                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                <Link to="/#agents">
+                  <Button variant="magic" className="gap-2">
+                    <Plus size={16} />
+                    Deploy New Agent
+                  </Button>
+                </Link>
+              </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Recent Calls */}
-          <div className="lg:col-span-2">
-            <Card className="glass-card border-white/10">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <PhoneIncoming size={18} className="text-magic" />
-                  Recent Calls
-                </CardTitle>
-                <Button variant="ghost" size="sm" className="text-muted-foreground">
-                  View All
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[400px] pr-4">
-                  <div className="space-y-3">
-                    {recentCalls.map((call) => (
-                      <div 
-                        key={call.id} 
-                        className="glass-card border border-white/5 rounded-xl p-4 hover:border-white/10 transition-all"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <p className="font-semibold text-foreground">{call.caller}</p>
-                            <p className="text-sm text-muted-foreground">{call.phone}</p>
-                          </div>
-                          <div className="text-right">
-                            <span className={`text-xs px-2 py-1 rounded-full border ${getStatusBadge(call.status)}`}>
-                              {call.status}
-                            </span>
-                          </div>
-                        </div>
-                        <p className="text-sm text-foreground/80 mb-2">{call.summary}</p>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Clock size={12} />
-                            {call.time}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Phone size={12} />
-                            {call.duration}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Upcoming Appointments */}
-            <Card className="glass-card border-white/10">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <Calendar size={18} className="text-sparkle" />
-                  Upcoming Appointments
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {upcomingAppointments.map((apt) => (
-                    <div 
-                      key={apt.id} 
-                      className="glass-card border border-white/5 rounded-xl p-3"
+              {/* Agent Tabs */}
+              {agents.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {agents.map((agent) => (
+                    <button
+                      key={agent.id}
+                      onClick={() => setSelectedAgent(agent)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl glass-card border transition-all whitespace-nowrap ${
+                        selectedAgent?.id === agent.id 
+                          ? "border-magic/50 shadow-[0_0_20px_hsl(280_60%_55%/0.3)]" 
+                          : "border-white/10 hover:border-white/20"
+                      }`}
                     >
-                      <p className="font-medium text-foreground text-sm">{apt.customer}</p>
-                      <p className="text-xs text-muted-foreground mb-2">{apt.service}</p>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-sparkle font-medium">{apt.date}</span>
-                        <span className="text-muted-foreground">{apt.time}</span>
-                      </div>
-                    </div>
+                      <div className={`w-2 h-2 rounded-full ${agent.status === "active" ? "bg-sparkle" : "bg-muted-foreground"}`} />
+                      <span className="text-sm font-medium text-foreground">{agent.business_name}</span>
+                      <span className="text-xs text-muted-foreground">({agent.industry})</span>
+                    </button>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              )}
+            </div>
 
-            {/* Quick Stats */}
-            <Card className="glass-card border-white/10">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <BarChart3 size={18} className="text-magic" />
-                  This Week
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <PhoneIncoming size={16} className="text-magic" />
-                    <span className="text-sm text-muted-foreground">Calls Answered</span>
-                  </div>
-                  <span className="font-semibold text-foreground">234</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <PhoneMissed size={16} className="text-destructive" />
-                    <span className="text-sm text-muted-foreground">Missed (Before AI)</span>
-                  </div>
-                  <span className="font-semibold text-foreground line-through text-muted-foreground">47</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 size={16} className="text-sparkle" />
-                    <span className="text-sm text-muted-foreground">Appointments Set</span>
-                  </div>
-                  <span className="font-semibold text-foreground">56</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp size={16} className="text-sparkle" />
-                    <span className="text-sm text-muted-foreground">Conversion Rate</span>
-                  </div>
-                  <span className="font-semibold text-sparkle">24%</span>
-                </div>
-              </CardContent>
-            </Card>
+            {/* Stats Grid */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+              {stats.map((stat) => (
+                <Card key={stat.label} className="glass-card border-white/10">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <stat.icon className={`${stat.color}`} size={20} />
+                      <span className="text-xs text-sparkle font-medium">{stat.change}</span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                    <p className="text-sm text-muted-foreground">{stat.label}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-            {/* AI Number */}
-            <Card className="glass-card border-sparkle/30 bg-sparkle/5">
-              <CardContent className="p-4 text-center">
-                <Phone className="mx-auto text-sparkle mb-2" size={24} />
-                <p className="text-sm text-muted-foreground mb-1">Your AI Number</p>
-                <p className="text-lg font-bold text-sparkle">+1 (555) 987-6543</p>
-                <p className="text-xs text-muted-foreground mt-2">Forward calls or share with customers</p>
-              </CardContent>
-            </Card>
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* Recent Calls */}
+              <div className="lg:col-span-2">
+                <Card className="glass-card border-white/10">
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
+                      <PhoneIncoming size={18} className="text-magic" />
+                      Recent Calls
+                    </CardTitle>
+                    <Button variant="ghost" size="sm" className="text-muted-foreground">
+                      View All
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <ScrollArea className="h-[400px] pr-4">
+                      <div className="space-y-3">
+                        {recentCalls.map((call) => (
+                          <div 
+                            key={call.id} 
+                            className="glass-card border border-white/5 rounded-xl p-4 hover:border-white/10 transition-all"
+                          >
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <p className="font-semibold text-foreground">{call.caller}</p>
+                                <p className="text-sm text-muted-foreground">{call.phone}</p>
+                              </div>
+                              <div className="text-right">
+                                <span className={`text-xs px-2 py-1 rounded-full border ${getStatusBadge(call.status)}`}>
+                                  {call.status}
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-sm text-foreground/80 mb-2">{call.summary}</p>
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Clock size={12} />
+                                {call.time}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Phone size={12} />
+                                {call.duration}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Sidebar */}
+              <div className="space-y-6">
+                {/* Upcoming Appointments */}
+                <Card className="glass-card border-white/10">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
+                      <Calendar size={18} className="text-sparkle" />
+                      Upcoming Appointments
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {upcomingAppointments.map((apt) => (
+                        <div 
+                          key={apt.id} 
+                          className="glass-card border border-white/5 rounded-xl p-3"
+                        >
+                          <p className="font-medium text-foreground text-sm">{apt.customer}</p>
+                          <p className="text-xs text-muted-foreground mb-2">{apt.service}</p>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-sparkle font-medium">{apt.date}</span>
+                            <span className="text-muted-foreground">{apt.time}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Quick Stats */}
+                <Card className="glass-card border-white/10">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
+                      <BarChart3 size={18} className="text-magic" />
+                      This Week
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <PhoneIncoming size={16} className="text-magic" />
+                        <span className="text-sm text-muted-foreground">Calls Answered</span>
+                      </div>
+                      <span className="font-semibold text-foreground">234</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <PhoneMissed size={16} className="text-destructive" />
+                        <span className="text-sm text-muted-foreground">Missed (Before AI)</span>
+                      </div>
+                      <span className="font-semibold text-foreground line-through text-muted-foreground">47</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 size={16} className="text-sparkle" />
+                        <span className="text-sm text-muted-foreground">Appointments Set</span>
+                      </div>
+                      <span className="font-semibold text-foreground">56</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp size={16} className="text-sparkle" />
+                        <span className="text-sm text-muted-foreground">Conversion Rate</span>
+                      </div>
+                      <span className="font-semibold text-sparkle">24%</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* AI Number */}
+                {selectedAgent?.ai_phone_number && (
+                  <Card className="glass-card border-sparkle/30 bg-sparkle/5">
+                    <CardContent className="p-4 text-center">
+                      <Phone className="mx-auto text-sparkle mb-2" size={24} />
+                      <p className="text-sm text-muted-foreground mb-1">Your AI Number</p>
+                      <p className="text-lg font-bold text-sparkle">{selectedAgent.ai_phone_number}</p>
+                      <p className="text-xs text-muted-foreground mt-2">Forward calls or share with customers</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          /* Empty State */
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-magic/30 to-sparkle/30 mb-6">
+              <Sparkles className="text-sparkle" size={40} />
+            </div>
+            <h2 className="text-2xl font-bold text-foreground mb-2">No Agents Deployed Yet</h2>
+            <p className="text-muted-foreground mb-6 max-w-md">
+              Deploy your first AI agent to start handling calls 24/7, capturing leads, and never missing a customer again.
+            </p>
+            <Link to="/#agents">
+              <Button variant="magic" size="lg" className="gap-2">
+                <Plus size={18} />
+                Deploy Your First Agent
+              </Button>
+            </Link>
           </div>
-        </div>
+        )}
       </main>
     </div>
   );
