@@ -1,4 +1,5 @@
 import HowItWorksStep from "./HowItWorksStep";
+import DemoVideo from "./DemoVideo";
 import { Search, Settings, Rocket, BarChart3 } from "lucide-react";
 
 const steps = [
@@ -62,6 +63,11 @@ const HowItWorksSection = () => {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Demo Video */}
+        <div className="mt-16 max-w-4xl mx-auto">
+          <DemoVideo />
         </div>
       </div>
     </section>
