@@ -260,18 +260,40 @@ const Dashboard = () => {
           <>
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h1 className="text-3xl font-bold text-foreground mb-2">Agent Dashboard</h1>
-                  <p className="text-muted-foreground">
-                    {selectedAgent?.industry} {selectedAgent?.agent_type} • {selectedAgent?.status === "active" ? "Active 24/7" : "Paused"}
-                  </p>
+              <div>
+                <h1 className="text-3xl font-bold text-foreground mb-2">Agent Dashboard</h1>
+                <p className="text-muted-foreground">
+                  {selectedAgent?.industry} {selectedAgent?.agent_type} • {selectedAgent?.status === "active" ? "Active 24/7" : "Paused"}
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                {/* Agent Slots Display */}
+                <div className="glass-card px-4 py-2 rounded-xl border border-white/10">
+                  <div className="flex items-center gap-2">
+                    <Users size={16} className="text-magic" />
+                    <span className="text-sm text-muted-foreground">Agent Slots:</span>
+                    <span className="text-sm font-semibold text-foreground">
+                      {agents.length} / {currentTier ? PRICING_TIERS[currentTier].agentLimit : 1}
+                    </span>
+                  </div>
+                  {currentTier && agents.length >= PRICING_TIERS[currentTier].agentLimit && (
+                    <p className="text-xs text-sparkle mt-1">Upgrade for more slots</p>
+                  )}
+                  {!currentTier && agents.length >= 1 && (
+                    <p className="text-xs text-sparkle mt-1">Subscribe for more slots</p>
+                  )}
                 </div>
                 <Link to="/#agents">
-                  <Button variant="magic" className="gap-2">
+                  <Button 
+                    variant="magic" 
+                    className="gap-2"
+                    disabled={currentTier ? agents.length >= PRICING_TIERS[currentTier].agentLimit : agents.length >= 1}
+                  >
                     <Plus size={16} />
                     Deploy New Agent
                   </Button>
                 </Link>
+              </div>
               </div>
 
               {/* Agent Tabs */}
