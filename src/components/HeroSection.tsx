@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Phone, Play, Sparkles } from "lucide-react";
+import { ArrowRight, Phone, Sparkles } from "lucide-react";
 import TrustBadge from "./TrustBadge";
-import genieHero from "@/assets/genie-hero.png";
+import DemoVideo from "./DemoVideo";
 
 const HeroSection = () => {
   return (
@@ -36,13 +36,9 @@ const HeroSection = () => {
             automation that actually works.
           </p>
 
-          {/* Genie Hero Image */}
-          <div className="mx-auto mb-10 max-w-2xl animate-fade-gentle" style={{ animationDelay: "0.2s" }}>
-            <img 
-              src={genieHero} 
-              alt="Magic genie lamp with cute AI agent appearing in a poof of sparkles" 
-              className="w-full h-auto rounded-2xl shadow-magic"
-            />
+          {/* Demo Video */}
+          <div className="mx-auto mb-10 max-w-3xl animate-fade-gentle" style={{ animationDelay: "0.2s" }}>
+            <DemoVideo />
           </div>
 
           {/* CTA Buttons */}
@@ -51,10 +47,6 @@ const HeroSection = () => {
               <Phone size={20} />
               Try a Live Demo
               <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
-            </Button>
-            <Button variant="magicOutline" size="xl" className="w-full sm:w-auto">
-              <Play size={18} />
-              Watch How It Works
             </Button>
           </div>
 
