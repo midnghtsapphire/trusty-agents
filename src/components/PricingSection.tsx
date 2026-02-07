@@ -91,10 +91,10 @@ const PricingSection = () => {
           {tiers.map((tier, index) => (
             <div
               key={tier.name}
-              className={`relative rounded-2xl glass-card p-8 shadow-card transition-all duration-200 hover:shadow-card-hover ${
+              className={`relative rounded-2xl glass-card p-8 shadow-card transition-all duration-300 hover:shadow-card-hover ${
                 tier.popular
                   ? "border-2 border-magic/50 shadow-magic scale-105 lg:scale-110"
-                  : "border border-border"
+                  : "border border-white/10"
               }`}
               style={{ animationDelay: `${0.1 * index}s` }}
             >

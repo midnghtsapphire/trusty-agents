@@ -30,7 +30,7 @@ const steps = [
 
 const HowItWorksSection = () => {
   return (
-    <section id="how-it-works" className="bg-secondary/30 py-20 md:py-32">
+    <section id="how-it-works" className="glass-dark border-y border-white/10 py-20 md:py-32">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="mx-auto mb-16 max-w-2xl text-center">

@@ -36,7 +36,7 @@ const stats = [
 
 const AboutSection = () => {
   return (
-    <section id="about" className="bg-secondary/20 py-20 md:py-32">
+    <section id="about" className="glass-dark border-y border-white/10 py-20 md:py-32">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="mx-auto mb-16 max-w-3xl text-center">
@@ -61,7 +61,7 @@ const AboutSection = () => {
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="rounded-xl glass-card p-6 text-center shadow-card border border-border"
+              className="rounded-xl glass-card p-6 text-center shadow-card border border-white/10"
             >
               <p className="text-3xl font-extrabold text-gradient-gold md:text-4xl">
                 {stat.value}
@@ -80,7 +80,7 @@ const AboutSection = () => {
             {values.map((value, index) => (
               <div
                 key={value.title}
-                className="rounded-xl glass-card p-6 shadow-card border border-border transition-all hover:shadow-card-hover"
+                className="rounded-xl glass-card p-6 shadow-card border border-white/10 transition-all duration-300 hover:shadow-card-hover"
                 style={{ animationDelay: `${0.1 * index}s` }}
               >
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-magic/20 to-sparkle/20 text-magic">

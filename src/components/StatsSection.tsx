@@ -2,7 +2,7 @@ import StatsCard from "./StatsCard";
 
 const StatsSection = () => {
   return (
-    <section className="border-y border-border/50 bg-secondary/30 py-16">
+    <section className="border-y border-white/10 glass-dark py-16">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           <StatsCard

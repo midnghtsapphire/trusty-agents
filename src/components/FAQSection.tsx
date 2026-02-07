@@ -88,7 +88,7 @@ const FAQSection = () => {
               <AccordionItem
                 key={index}
                 value={`item-${index}`}
-                className="rounded-xl glass-card border border-border px-6 shadow-card data-[state=open]:shadow-card-hover transition-all"
+                className="rounded-xl glass-card border border-white/10 px-6 shadow-card data-[state=open]:shadow-card-hover transition-all duration-300"
               >
                 <AccordionTrigger className="py-5 text-left text-foreground hover:no-underline [&[data-state=open]>svg]:rotate-180">
                   <span className="pr-4 font-semibold">{faq.question}</span>

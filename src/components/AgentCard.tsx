@@ -23,8 +23,8 @@ const AgentCard = ({
 }: AgentCardProps) => {
   return (
     <div
-      className={`group relative rounded-2xl glass-card p-6 shadow-card transition-all duration-200 hover:shadow-card-hover ${
-        popular ? "border-2 border-magic/40 shadow-magic" : "border border-border"
+      className={`group relative rounded-2xl glass-card p-6 shadow-card transition-all duration-300 hover:glass-card-hover ${
+        popular ? "border-2 border-magic/50 shadow-magic" : "border border-border/50"
       }`}
     >
       {popular && (
