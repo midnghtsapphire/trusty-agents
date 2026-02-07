@@ -59,8 +59,8 @@ const AgentsSection = () => {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="mx-auto mb-16 max-w-2xl text-center">
-          <span className="mb-4 inline-block rounded-full bg-trust/10 px-4 py-1.5 text-sm font-medium text-trust">
-            Agent Marketplace
+          <span className="mb-4 inline-block rounded-full glass-card bg-magic/15 px-4 py-1.5 text-sm font-medium text-magic border border-magic/30">
+            ✨ Agent Marketplace
           </span>
           <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">
             Verified Agents for Every Industry
@@ -88,7 +88,7 @@ const AgentsSection = () => {
         <div className="mt-12 text-center">
           <p className="text-muted-foreground">
             Don't see your industry?{" "}
-            <a href="#contact" className="font-medium text-trust hover:underline">
+            <a href="#contact" className="font-medium text-magic hover:underline">
               Request a custom agent →
             </a>
           </p>
