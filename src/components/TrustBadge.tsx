@@ -27,7 +27,7 @@ const TrustBadge = ({ variant = "verified", size = "md" }: TrustBadgeProps) => {
     reviewed: {
       icon: CheckCircle2,
       label: "Human Reviewed",
-      className: "bg-magic/15 text-magic border-magic/30",
+      className: "bg-magic/20 text-magic border-magic/40",
     },
     secure: {
       icon: Shield,
