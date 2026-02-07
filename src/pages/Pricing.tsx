@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Check, Sparkles, Loader2, Crown, CreditCard } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Check, Sparkles, Loader2, Crown, CreditCard, FileText, Star } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import BackgroundParticles from "@/components/BackgroundParticles";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { PRICING_TIERS, getTierByProductId, PricingTier } from "@/lib/stripe";
+import { PRICING_TIERS, ONE_TIME_PRODUCTS, getTierByProductId, PricingTier, OneTimeProduct } from "@/lib/stripe";
 import { useToast } from "@/hooks/use-toast";
 
 const Pricing = () => {
@@ -89,6 +89,44 @@ const Pricing = () => {
     }
   };
 
+  const handleOneTimePurchase = async (productKey: OneTimeProduct) => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    setLoading(productKey);
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        navigate("/auth");
+        return;
+      }
+
+      const product = ONE_TIME_PRODUCTS[productKey];
+      const { data, error } = await supabase.functions.invoke("create-payment", {
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
+        body: { priceId: product.priceId },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to start checkout",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(null);
+    }
+  };
+
   const handleManageSubscription = async () => {
     setLoading("manage");
     try {
@@ -124,6 +162,12 @@ const Pricing = () => {
     key: key as PricingTier,
     ...tier,
     popular: key === "pro",
+  }));
+
+  const oneTimeProducts = Object.entries(ONE_TIME_PRODUCTS).map(([key, product]) => ({
+    key: key as OneTimeProduct,
+    ...product,
+    icon: key === "callReports" ? <FileText size={20} /> : <Star size={20} />,
   }));
 
   return (
@@ -201,7 +245,7 @@ const Pricing = () => {
           </div>
         )}
 
-        {/* Pricing Cards */}
+        {/* Subscription Plans */}
         <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
           {tiers.map((tier) => {
             const isCurrentPlan = currentTier === tier.key;
@@ -263,6 +307,50 @@ const Pricing = () => {
               </Card>
             );
           })}
+        </div>
+
+        {/* One-Time Add-Ons Section */}
+        <div className="mt-16 max-w-3xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-foreground mb-2">
+              Premium Add-Ons
+            </h2>
+            <p className="text-muted-foreground">
+              One-time purchases to enhance your AI agent experience
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            {oneTimeProducts.map((product) => (
+              <Card key={product.key} className="glass-card border-white/10">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-magic/20 to-sparkle/20 flex items-center justify-center text-magic">
+                      {product.icon}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-foreground">{product.name}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">{product.description}</p>
+                      <div className="mt-4 flex items-center justify-between">
+                        <span className="text-2xl font-bold text-foreground">${product.price}</span>
+                        <Button
+                          variant="sparkle"
+                          size="sm"
+                          onClick={() => handleOneTimePurchase(product.key)}
+                          disabled={loading !== null}
+                        >
+                          {loading === product.key ? (
+                            <Loader2 className="animate-spin mr-2" size={14} />
+                          ) : null}
+                          Buy Now
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
 
         {/* FAQ Link */}

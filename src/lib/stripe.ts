@@ -46,6 +46,26 @@ export const PRICING_TIERS = {
 
 export type PricingTier = keyof typeof PRICING_TIERS;
 
+// One-time payment products
+export const ONE_TIME_PRODUCTS = {
+  callReports: {
+    name: "Call Reports Pack",
+    price: 29,
+    priceId: "price_1Sy4D3P8T6VGDCG5Wz6vUXnA",
+    productId: "prod_Tvw58yHZy38IpR",
+    description: "Detailed AI call transcripts and analytics export",
+  },
+  whiteGloveSetup: {
+    name: "White-Glove Setup",
+    price: 199,
+    priceId: "price_1Sy4DEP8T6VGDCG596ExzDYY",
+    productId: "prod_Tvw5hTRHFVmJtt",
+    description: "Premium onboarding with custom agent training",
+  },
+} as const;
+
+export type OneTimeProduct = keyof typeof ONE_TIME_PRODUCTS;
+
 export const getTierByProductId = (productId: string | null): PricingTier | null => {
   if (!productId) return null;
   
