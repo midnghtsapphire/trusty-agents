@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { ArrowRight, Sparkles, DollarSign, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TrustBadge from "./TrustBadge";
+import AgentChatDialog from "./AgentChatDialog";
 
 interface AgentCardProps {
   industry: string;
@@ -21,7 +23,10 @@ const AgentCard = ({
   icon,
   popular = false,
 }: AgentCardProps) => {
+  const [chatOpen, setChatOpen] = useState(false);
+
   return (
+    <>
     <div
       className={`group relative rounded-2xl glass-card p-6 shadow-card transition-all duration-300 hover:glass-card-hover ${
         popular ? "border-2 border-magic/50 shadow-magic" : "border border-border/50"
@@ -62,7 +67,11 @@ const AgentCard = ({
         </div>
       </div>
 
-      <Button className="w-full group-hover:bg-magic group-hover:text-magic-foreground transition-colors" variant="glass">
+      <Button 
+        className="w-full group-hover:bg-magic group-hover:text-magic-foreground transition-colors" 
+        variant="glass"
+        onClick={() => setChatOpen(true)}
+      >
         <Sparkles size={16} />
         Deploy Agent
         <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
@@ -72,6 +81,15 @@ const AgentCard = ({
         ✨ No credit card required • 14-day free trial
       </p>
     </div>
+
+    <AgentChatDialog
+      open={chatOpen}
+      onOpenChange={setChatOpen}
+      industry={industry}
+      agentType={agentType}
+      icon={icon}
+    />
+    </>
   );
 };
 
