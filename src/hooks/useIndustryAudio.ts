@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 // Industry-specific comfort sounds and prompts
@@ -191,6 +192,11 @@ export function useIndustryAudio() {
 
       if (!response.ok) {
         console.warn("ElevenLabs TTS failed, using browser fallback");
+        toast({
+          title: "Audio provider unavailable",
+          description: "Using device voice instead",
+          duration: 3000,
+        });
         playBrowserTTS(soundConfig.ttsMessage);
         return;
       }
@@ -199,10 +205,20 @@ export function useIndustryAudio() {
       if (data.audioContent) {
         await playAudio(data.audioContent);
       } else {
+        toast({
+          title: "Audio provider unavailable",
+          description: "Using device voice instead",
+          duration: 3000,
+        });
         playBrowserTTS(soundConfig.ttsMessage);
       }
     } catch (error) {
       console.warn("TTS error, using browser fallback:", error);
+      toast({
+        title: "Audio provider unavailable",
+        description: "Using device voice instead",
+        duration: 3000,
+      });
       playBrowserTTS(soundConfig.ttsMessage);
     } finally {
       setIsLoading(false);
@@ -233,6 +249,11 @@ export function useIndustryAudio() {
 
       if (!response.ok) {
         console.warn("ElevenLabs TTS failed, using browser fallback");
+        toast({
+          title: "Audio provider unavailable",
+          description: "Using device voice instead",
+          duration: 3000,
+        });
         playBrowserTTS(message);
         return;
       }
@@ -241,10 +262,20 @@ export function useIndustryAudio() {
       if (data.audioContent) {
         await playAudio(data.audioContent);
       } else {
+        toast({
+          title: "Audio provider unavailable",
+          description: "Using device voice instead",
+          duration: 3000,
+        });
         playBrowserTTS(message);
       }
     } catch (error) {
       console.warn("Happy audio error, using browser fallback:", error);
+      toast({
+        title: "Audio provider unavailable",
+        description: "Using device voice instead",
+        duration: 3000,
+      });
       playBrowserTTS(message);
     } finally {
       setIsLoading(false);
