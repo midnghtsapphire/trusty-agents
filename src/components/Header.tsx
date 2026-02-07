@@ -20,16 +20,16 @@ const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-8 md:flex">
-          <a href="#agents" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a href="#agents" className="text-sm font-semibold text-foreground/80 hover:text-sparkle transition-colors">
             Agents
           </a>
-          <a href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a href="#how-it-works" className="text-sm font-semibold text-foreground/80 hover:text-sparkle transition-colors">
             How It Works
           </a>
-          <a href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a href="#pricing" className="text-sm font-semibold text-foreground/80 hover:text-sparkle transition-colors">
             Pricing
           </a>
-          <a href="#about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <a href="#about" className="text-sm font-semibold text-foreground/80 hover:text-sparkle transition-colors">
             About
           </a>
         </nav>
