@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
+import BadgeExplainerSection from "@/components/BadgeExplainerSection";
 import StatsSection from "@/components/StatsSection";
 import AgentsSection from "@/components/AgentsSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
@@ -21,22 +22,24 @@ const Index = () => {
       <main className="relative z-10">
         <HeroSection />
         <GlowingDivider variant="dual" />
+        <BadgeExplainerSection />
+        <GlowingDivider variant="magic" />
         <StatsSection />
-        <GlowingDivider variant="magic" />
+        <GlowingDivider variant="sparkle" />
         <AgentsSection />
-        <GlowingDivider variant="sparkle" />
+        <GlowingDivider variant="dual" />
         <HowItWorksSection />
-        <GlowingDivider variant="dual" />
+        <GlowingDivider variant="magic" />
         <HowItWorksDetailedSection />
-        <GlowingDivider variant="magic" />
+        <GlowingDivider variant="sparkle" />
         <PricingSection />
-        <GlowingDivider variant="sparkle" />
-        <TestimonialsSection />
         <GlowingDivider variant="dual" />
-        <FAQSection />
+        <TestimonialsSection />
         <GlowingDivider variant="magic" />
-        <AboutSection />
+        <FAQSection />
         <GlowingDivider variant="sparkle" />
+        <AboutSection />
+        <GlowingDivider variant="dual" />
         <CTASection />
       </main>
       <Footer />
