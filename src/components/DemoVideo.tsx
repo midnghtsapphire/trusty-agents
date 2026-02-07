@@ -1,9 +1,18 @@
-import { useMemo, useRef, useState } from "react";
-import { Maximize2, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { useMemo, useRef, useState, useEffect } from "react";
+import { Maximize2, Pause, Play, Volume2, VolumeX, Captions, CaptionsOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import demoVideo from "@/assets/demo-video.mp4";
 
 type NarrationStatus = "idle" | "loading" | "ready" | "error";
+
+// Timed captions for hearing impaired/deaf users
+const CAPTIONS = [
+  { start: 0, end: 2, text: "Here's how Poof works in four simple steps." },
+  { start: 2, end: 4, text: "Step 1: A customer calls your business." },
+  { start: 4, end: 6, text: "Step 2: Your AI agent answers instantly and qualifies the lead." },
+  { start: 6, end: 8, text: "Step 3: The agent books the appointment on your calendar." },
+  { start: 8, end: 10, text: "Step 4: Review outcomes in your dashboard." },
+];
 
 const DemoVideo = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -12,11 +21,28 @@ const DemoVideo = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [narrationStatus, setNarrationStatus] = useState<NarrationStatus>("idle");
+  const [currentTime, setCurrentTime] = useState(0);
+  const [showCaptions, setShowCaptions] = useState(true);
+
+  // Get current caption based on video time
+  const currentCaption = useMemo(() => {
+    return CAPTIONS.find(c => currentTime >= c.start && currentTime < c.end)?.text || "";
+  }, [currentTime]);
+
+  // Update current time for synchronized captions
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleTimeUpdate = () => setCurrentTime(video.currentTime);
+    video.addEventListener("timeupdate", handleTimeUpdate);
+    return () => video.removeEventListener("timeupdate", handleTimeUpdate);
+  }, []);
 
   const narrationText = useMemo(
     () =>
       [
-        "Here’s how Poof works in four steps.",
+        "Here's how Poof works in four steps.",
         "One: a customer calls your business.",
         "Two: your verified AI agent answers instantly and qualifies the lead.",
         "Three: the agent books the appointment directly on your calendar.",
@@ -27,7 +53,7 @@ const DemoVideo = () => {
 
   const ensureNarrationReady = async () => {
     if (narrationRef.current) return true;
-    if (narrationStatus === "error") return false; // Don't retry failed attempts
+    if (narrationStatus === "error") return false;
 
     setNarrationStatus("loading");
     try {
@@ -62,11 +88,8 @@ const DemoVideo = () => {
     const video = videoRef.current;
     if (!video) return;
 
-    // The generated demo video may not contain an audio track, so we keep the video muted
-    // and play a separate voiceover track for reliable audio on all browsers.
     video.muted = true;
 
-    // Try to load narration, but don't block playback if it fails
     let audioAvailable = false;
     if (!isMuted) {
       audioAvailable = await ensureNarrationReady();
@@ -111,7 +134,6 @@ const DemoVideo = () => {
     const narration = narrationRef.current;
     if (!narration) {
       if (!nextMuted) {
-        // If unmuting before narration exists, generate it.
         await ensureNarrationReady();
       }
       return;
@@ -140,8 +162,14 @@ const DemoVideo = () => {
     }
   };
 
+  const toggleCaptions = () => setShowCaptions(!showCaptions);
+
   return (
-    <div className="relative rounded-2xl overflow-hidden border border-border shadow-magic group">
+    <div 
+      className="relative rounded-2xl overflow-hidden border border-border shadow-magic group"
+      role="region"
+      aria-label="Product demonstration video with audio description and captions"
+    >
       <video
         ref={videoRef}
         src={demoVideo}
@@ -152,72 +180,141 @@ const DemoVideo = () => {
         muted
         onPause={() => setIsPlaying(false)}
         onPlay={() => setIsPlaying(true)}
+        aria-label="Animated demonstration showing how Poof AI answers customer calls, qualifies leads, books appointments, and displays analytics on a dashboard"
       />
 
       {/* Overlay gradient */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent pointer-events-none" />
 
-      {/* Center Play/Pause */}
+      {/* Live closed captions for deaf/hearing impaired - large, high contrast */}
+      {showCaptions && currentCaption && isPlaying && (
+        <div 
+          className="absolute top-4 left-4 right-4 flex justify-center pointer-events-none"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <div className="bg-background/95 border-2 border-primary/50 rounded-xl px-6 py-4 max-w-xl shadow-lg">
+            <p className="text-lg md:text-xl font-bold text-foreground text-center leading-relaxed">
+              {currentCaption}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Audio playing indicator for deaf users */}
+      {isPlaying && !isMuted && narrationStatus === "ready" && (
+        <div 
+          className="absolute top-4 right-4 flex items-center gap-2 bg-primary/90 text-primary-foreground px-3 py-1.5 rounded-full text-sm font-medium"
+          role="status"
+          aria-label="Audio narration is playing"
+        >
+          <span className="flex gap-0.5">
+            <span className="w-1 h-3 bg-primary-foreground rounded-full animate-pulse" />
+            <span className="w-1 h-4 bg-primary-foreground rounded-full animate-pulse delay-75" />
+            <span className="w-1 h-2 bg-primary-foreground rounded-full animate-pulse delay-150" />
+          </span>
+          <span className="sr-only">Audio playing</span>
+          <span aria-hidden="true">Audio</span>
+        </div>
+      )}
+
+      {/* Center Play/Pause - larger touch target for accessibility */}
       <button
         onClick={togglePlay}
-        className="absolute inset-0 flex items-center justify-center"
-        aria-label={isPlaying ? "Pause demo" : "Play demo"}
+        className="absolute inset-0 flex items-center justify-center focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/50"
+        aria-label={isPlaying ? "Pause video demonstration" : "Play video demonstration"}
       >
         <div
           className={
-            "w-20 h-20 rounded-full bg-primary/80 backdrop-blur-sm flex items-center justify-center " +
-            "shadow-magic transition-all duration-300 hover:scale-110"
+            "w-24 h-24 md:w-28 md:h-28 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center " +
+            "shadow-magic transition-all duration-300 hover:scale-110 focus:scale-110"
           }
         >
           {isPlaying ? (
-            <Pause size={32} className="text-primary-foreground" />
+            <Pause size={40} className="text-primary-foreground" aria-hidden="true" />
           ) : (
-            <Play size={32} className="text-primary-foreground ml-1" />
+            <Play size={40} className="text-primary-foreground ml-1" aria-hidden="true" />
           )}
         </div>
       </button>
 
-      {/* Controls */}
-      <div className="absolute bottom-4 right-4 flex gap-2">
+      {/* Controls - larger buttons for accessibility */}
+      <div className="absolute bottom-4 right-4 flex gap-2" role="toolbar" aria-label="Video controls">
+        {/* Captions toggle */}
+        <button
+          onClick={toggleCaptions}
+          className="p-3 rounded-full bg-background/90 backdrop-blur-sm border-2 border-border hover:bg-background hover:border-primary/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          title={showCaptions ? "Hide captions" : "Show captions"}
+          aria-label={showCaptions ? "Hide captions" : "Show captions"}
+          aria-pressed={showCaptions}
+        >
+          {showCaptions ? (
+            <Captions size={22} className="text-primary" aria-hidden="true" />
+          ) : (
+            <CaptionsOff size={22} className="text-muted-foreground" aria-hidden="true" />
+          )}
+        </button>
+
+        {/* Volume toggle */}
         {narrationStatus !== "error" && (
           <button
             onClick={toggleMute}
-            className="p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-colors"
-            title={isMuted ? "Unmute voiceover" : "Mute voiceover"}
-            aria-label={isMuted ? "Unmute voiceover" : "Mute voiceover"}
+            className="p-3 rounded-full bg-background/90 backdrop-blur-sm border-2 border-border hover:bg-background hover:border-primary/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            title={isMuted ? "Enable audio narration" : "Mute audio narration"}
+            aria-label={isMuted ? "Enable audio narration" : "Mute audio narration"}
+            aria-pressed={!isMuted}
           >
             {isMuted ? (
-              <VolumeX size={18} className="text-muted-foreground" />
+              <VolumeX size={22} className="text-muted-foreground" aria-hidden="true" />
             ) : (
-              <Volume2 size={18} className="text-foreground" />
+              <Volume2 size={22} className="text-foreground" aria-hidden="true" />
             )}
           </button>
         )}
+
+        {/* Fullscreen */}
         <button
           onClick={toggleFullscreen}
-          className="p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-colors"
-          title="Fullscreen"
-          aria-label="Fullscreen"
+          className="p-3 rounded-full bg-background/90 backdrop-blur-sm border-2 border-border hover:bg-background hover:border-primary/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          title="View fullscreen"
+          aria-label="View video in fullscreen mode"
         >
-          <Maximize2 size={18} className="text-muted-foreground" />
+          <Maximize2 size={22} className="text-muted-foreground" aria-hidden="true" />
         </button>
       </div>
 
-      {/* Step captions (readable, not baked into the video) */}
-      <div className="absolute bottom-4 left-4 right-20 md:right-28">
-        <div className="glass-card border border-border rounded-xl px-4 py-3 text-left">
-          <p className="text-xs font-medium text-muted-foreground">Step-by-step</p>
-          <p className="mt-1 text-sm font-semibold text-foreground">
-            1) Answer instantly • 2) Qualify lead • 3) Book appointment • 4) Review dashboard
+      {/* Step summary for low vision - always visible, high contrast */}
+      <div className="absolute bottom-4 left-4 right-36 md:right-44">
+        <div className="bg-background/95 border-2 border-border rounded-xl px-4 py-3 text-left shadow-lg">
+          <p className="text-sm font-bold text-primary uppercase tracking-wide">
+            4-Step Process
+          </p>
+          <p className="mt-1.5 text-base md:text-lg font-semibold text-foreground leading-snug">
+            Answer → Qualify → Book → Review
           </p>
           {narrationStatus === "loading" && (
-            <p className="mt-1 text-xs text-muted-foreground">Loading voiceover…</p>
+            <p className="mt-1 text-sm text-muted-foreground" role="status">
+              Loading audio narration…
+            </p>
+          )}
+          {narrationStatus === "error" && (
+            <p className="mt-1 text-sm text-muted-foreground" role="status">
+              Captions available • Audio unavailable
+            </p>
           )}
         </div>
+      </div>
+
+      {/* Screen reader only: full description */}
+      <div className="sr-only" aria-live="polite">
+        {isPlaying 
+          ? `Video playing. ${currentCaption}` 
+          : "Video paused. Press play to watch a demonstration of how Poof AI handles customer calls."
+        }
       </div>
     </div>
   );
 };
 
 export default DemoVideo;
-
