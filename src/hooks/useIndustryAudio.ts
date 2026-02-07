@@ -50,14 +50,55 @@ export function useIndustryAudio() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const stopAudio = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
+    if (utteranceRef.current) {
+      window.speechSynthesis?.cancel();
+      utteranceRef.current = null;
+    }
     setIsPlaying(false);
   }, []);
+
+  // Browser TTS fallback
+  const playBrowserTTS = useCallback((text: string) => {
+    if (!window.speechSynthesis) return false;
+    
+    stopAudio();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.volume = 0.9;
+    
+    const voices = speechSynthesis.getVoices();
+    const preferredVoice = voices.find(v => 
+      v.name.includes("Samantha") || 
+      v.name.includes("Google") || 
+      v.name.includes("Microsoft") ||
+      v.lang.startsWith("en")
+    );
+    if (preferredVoice) utterance.voice = preferredVoice;
+    
+    utterance.onend = () => {
+      setIsPlaying(false);
+      utteranceRef.current = null;
+    };
+    
+    utterance.onerror = () => {
+      setIsPlaying(false);
+      utteranceRef.current = null;
+    };
+    
+    utteranceRef.current = utterance;
+    setIsPlaying(true);
+    speechSynthesis.speak(utterance);
+    return true;
+  }, [stopAudio]);
 
   const playAudio = useCallback(async (base64Audio: string) => {
     stopAudio();
@@ -149,19 +190,24 @@ export function useIndustryAudio() {
       );
 
       if (!response.ok) {
-        throw new Error(`TTS request failed: ${response.status}`);
+        console.warn("ElevenLabs TTS failed, using browser fallback");
+        playBrowserTTS(soundConfig.ttsMessage);
+        return;
       }
 
       const data = await response.json();
       if (data.audioContent) {
         await playAudio(data.audioContent);
+      } else {
+        playBrowserTTS(soundConfig.ttsMessage);
       }
     } catch (error) {
-      console.error("Error generating TTS:", error);
+      console.warn("TTS error, using browser fallback:", error);
+      playBrowserTTS(soundConfig.ttsMessage);
     } finally {
       setIsLoading(false);
     }
-  }, [playAudio]);
+  }, [playAudio, playBrowserTTS]);
 
   const playHappyCustomer = useCallback(async () => {
     const message = HAPPY_MESSAGES[Math.floor(Math.random() * HAPPY_MESSAGES.length)];
@@ -186,19 +232,24 @@ export function useIndustryAudio() {
       );
 
       if (!response.ok) {
-        throw new Error(`TTS request failed: ${response.status}`);
+        console.warn("ElevenLabs TTS failed, using browser fallback");
+        playBrowserTTS(message);
+        return;
       }
 
       const data = await response.json();
       if (data.audioContent) {
         await playAudio(data.audioContent);
+      } else {
+        playBrowserTTS(message);
       }
     } catch (error) {
-      console.error("Error generating happy audio:", error);
+      console.warn("Happy audio error, using browser fallback:", error);
+      playBrowserTTS(message);
     } finally {
       setIsLoading(false);
     }
-  }, [playAudio]);
+  }, [playAudio, playBrowserTTS]);
 
   return {
     isPlaying,

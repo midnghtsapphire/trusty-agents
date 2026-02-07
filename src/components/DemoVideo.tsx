@@ -98,6 +98,43 @@ const DemoVideo = () => {
     []
   );
 
+  // Browser TTS fallback when ElevenLabs is unavailable
+  const playBrowserTTS = (text: string): HTMLAudioElement | null => {
+    if (!window.speechSynthesis) return null;
+    
+    // Create a fake audio element interface for consistency
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.volume = 0.9;
+    
+    // Try to use a natural voice
+    const voices = speechSynthesis.getVoices();
+    const preferredVoice = voices.find(v => 
+      v.name.includes("Samantha") || 
+      v.name.includes("Google") || 
+      v.name.includes("Microsoft") ||
+      v.lang.startsWith("en")
+    );
+    if (preferredVoice) utterance.voice = preferredVoice;
+    
+    // Create a pseudo-audio object with play/pause/currentTime
+    const pseudoAudio = {
+      play: () => {
+        speechSynthesis.speak(utterance);
+        return Promise.resolve();
+      },
+      pause: () => speechSynthesis.cancel(),
+      get currentTime() { return 0; },
+      set currentTime(_: number) { /* no-op */ },
+      volume: 0.9,
+      preload: "auto",
+      playbackRate: 1,
+    } as unknown as HTMLAudioElement;
+    
+    return pseudoAudio;
+  };
+
   const ensureNarrationReady = async () => {
     if (narrationRef.current) return true;
     if (narrationStatus === "error") return false;
@@ -112,7 +149,13 @@ const DemoVideo = () => {
       });
 
       if (error || !data?.audioContent) {
-        console.warn("Voiceover unavailable, continuing with captions only");
+        console.warn("ElevenLabs unavailable, falling back to browser TTS");
+        const browserAudio = playBrowserTTS(narrationText);
+        if (browserAudio) {
+          narrationRef.current = browserAudio;
+          setNarrationStatus("ready");
+          return true;
+        }
         setNarrationStatus("error");
         return false;
       }
@@ -125,7 +168,13 @@ const DemoVideo = () => {
       setNarrationStatus("ready");
       return true;
     } catch (err) {
-      console.warn("Voiceover generation failed, continuing with captions only", err);
+      console.warn("TTS failed, trying browser fallback", err);
+      const browserAudio = playBrowserTTS(narrationText);
+      if (browserAudio) {
+        narrationRef.current = browserAudio;
+        setNarrationStatus("ready");
+        return true;
+      }
       setNarrationStatus("error");
       return false;
     }
