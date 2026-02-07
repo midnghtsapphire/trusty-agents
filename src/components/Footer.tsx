@@ -1,4 +1,4 @@
-import { Shield } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -8,15 +8,15 @@ const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-1">
             <a href="/" className="mb-4 flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-                <Shield size={20} className="text-primary-foreground" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-magic to-sparkle shadow-magic">
+                <Sparkles size={20} className="text-white" />
               </div>
               <span className="text-lg font-bold text-foreground">
-                Agent<span className="text-trust">Verified</span>
+                Poof<span className="text-gradient">Agent</span>
               </span>
             </a>
             <p className="text-sm text-muted-foreground">
-              The trust layer for agentic AI. Verified agents that actually work.
+              ✨ The magic layer for agentic AI. Verified agents that actually work.
             </p>
           </div>
 
@@ -56,7 +56,7 @@ const Footer = () => {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
           <p className="text-sm text-muted-foreground">
-            © 2024 AgentVerified. All rights reserved.
+            © 2024 PoofAgent. All rights reserved. ✨
           </p>
           <div className="flex items-center gap-4">
             <span className="text-xs text-muted-foreground">

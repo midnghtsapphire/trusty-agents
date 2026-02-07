@@ -9,12 +9,12 @@ const HowItWorksStep = ({ step, title, description, icon }: HowItWorksStepProps)
   return (
     <div className="relative flex flex-col items-center text-center">
       {/* Step number */}
-      <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-trust text-xs font-bold text-trust-foreground">
+      <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-magic to-sparkle text-xs font-bold text-white shadow-magic">
         {step}
       </div>
       
       {/* Icon container */}
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/5 text-primary">
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl glass-card bg-gradient-to-br from-magic/10 to-sparkle/10 text-magic">
         {icon}
       </div>
       
