@@ -7,7 +7,13 @@
 @layer base {
   :root {
     /* PoofAgent - Warm Magic Palette (No Blue Light) */
-    --background: 280 15% 97%;
+    --background: 280 20% 96%;
+    --background-gradient: linear-gradient(180deg, 
+      hsl(280 25% 95%) 0%, 
+      hsl(300 20% 94%) 25%,
+      hsl(320 15% 95%) 50%,
+      hsl(35 30% 95%) 75%,
+      hsl(280 20% 96%) 100%);
     --foreground: 280 30% 12%;
 
     --card: 0 0% 100%;
@@ -139,8 +145,11 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply text-foreground antialiased;
     font-family: 'Outfit', system-ui, sans-serif;
+    background: var(--background-gradient);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
