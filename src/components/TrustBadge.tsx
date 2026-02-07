@@ -22,7 +22,7 @@ const TrustBadge = ({ variant = "verified", size = "md" }: TrustBadgeProps) => {
     verified: {
       icon: Sparkles,
       label: "✨ Verified Agent",
-      className: "bg-sparkle/15 text-sparkle-foreground border-sparkle/30",
+      className: "bg-sparkle/20 text-sparkle border-sparkle/40",
     },
     reviewed: {
       icon: CheckCircle2,
