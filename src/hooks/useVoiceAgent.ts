@@ -26,8 +26,8 @@ export function useVoiceAgent() {
     onMessage: (message) => {
       console.log("Agent message:", message);
       
-      // Handle different message types - cast to any for flexible message handling
-      const msg = message as Record<string, unknown>;
+      // Handle different message types - cast through unknown for flexible message handling
+      const msg = message as unknown as Record<string, unknown>;
       
       if (msg.type === "user_transcript") {
         const userEvent = msg.user_transcription_event as Record<string, unknown> | undefined;
