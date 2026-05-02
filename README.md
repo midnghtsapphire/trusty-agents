@@ -77,3 +77,12 @@ Proprietary - All rights reserved
 ## Support
 
 For support, email support@example.com
+
+---
+
+## Test
+
+| Feature | Status |
+|---------|--------|
+| Feature | ✅ Ready |
+
