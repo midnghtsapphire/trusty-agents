@@ -1,5 +1,9 @@
 # Trusty Agents
 
+
+<!-- AUTO-PACKAGE-BADGES:START -->
+
+<!-- AUTO-PACKAGE-BADGES:END -->
 AI agent marketplace and management
 
 ## Features
